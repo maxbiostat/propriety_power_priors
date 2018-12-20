@@ -1,0 +1,123 @@
+\documentclass[a4paper, notitlepage, 11pt]{article}
+\usepackage{geometry}
+\fontfamily{times}
+\geometry{verbose,tmargin=30mm,bmargin=25mm,lmargin=25mm,rmargin=25mm}
+\pagestyle{empty}
+% end configs
+\usepackage{setspace,relsize}               
+\usepackage{moreverb}                        
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,citecolor=blue}
+\usepackage{amsmath}
+\usepackage{mathtools} 
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{indentfirst}
+\usepackage{todonotes}
+\usepackage[authoryear,round]{natbib}
+\bibliographystyle{apalike}
+\usepackage[pdftex]{lscape}
+\usepackage[utf8]{inputenc}
+
+% Title Page
+\title{\vspace{-9ex}\centering \bf On the propriety of power priors}
+\author{
+% Luiz Max de Carvalho\\
+% Program for Scientific Computing (PROCC), Oswaldo Cruz Foundation. \\
+}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newtheorem{theorem}{Theorem}[]
+\newtheorem{proposition}{Proposition}[]
+\newtheorem{remark}{Remark}[]
+\setcounter{theorem}{0} % assign desired value to theorem counter
+\begin{document}
+\maketitle
+
+% \begin{abstract}
+% 
+% Key-words: ;; ; ; . 
+% \end{abstract}
+
+\section*{Background}
+
+Power priors are cool. [bunch of citations for propriety of GLM, Cox model, exponential family, etc]
+
+\section*{Results}
+
+The data $x \in \mathcal{X} \subseteq \mathbb{R}^p$  and the parameter $\theta \in \Theta \subseteq \mathbb{R}^q$ and $a_0 \geq 0$.
+\begin{equation}
+\label{eq:power_prior}
+ p(\theta | x, a_0) \propto L(x | \theta)^{a_0}\pi(\theta)
+\end{equation}
+
+We want to show under which conditions
+\[\int_{\Theta} L(x | \theta)^{a_0}\pi(\theta) d\theta <\infty.\]
+\begin{theorem}
+\label{thm:integrability}
+ Assume $\int_{\mathcal{X}} L(x | \theta)dx < \infty$.
+ Denote $f_{a_0}(x;\theta) : = L(x | \theta)^{a_0}\pi(\theta)$.
+ Then for $a_0 > 0$, $\int_{\Theta} f_{a_0}(x;\theta) d\theta <\infty$.
+\end{theorem}
+\begin{proof}
+First, note that for $0 < a_0 \leq 1$, the function $g(x) = x^{a_0}$ is convex.
+Then, by Jensen's inequality and the finiteness of $L(x | \theta)$ for all of its arguments we have
+\[ \int_{\Theta} f_{a_0}(x; \theta) d\theta \leq \left[ \int_{\Theta} L(x|\theta)\pi(\theta)d\theta \right]^{a_0} < \infty. \]
+Rewrite $f_{a_0}(x; \theta)$ as
+\[ f_{a_0}(x; \theta) = L(x|\theta)^{a_0 -1} L(x|\theta)\pi(\theta). \]
+If $1 \leq a_0 \leq 2$, we have the Jensen's inequality case above, since we know that $L(x|\theta)\pi(\theta)$ is normalisable.
+Similarly, if $2 \leq a_0 \leq 3$, we can write 
+\[  f_{a_0}(x; \theta) = L(x|\theta)^{a_0-p} L(x|\theta)^p\pi(\theta), \]
+with $1 \leq p \leq 2$, again falling into the same case, since we know that $L(x|\theta)^{p}\pi(\theta)$ is normalisable.
+We can then show that for any $n \geq 1 \in \mathbb{N}$, $\int_{\Theta}f_{a_0}(x; \theta)d\theta < \infty$ for  $n-1 \leq a_0 \leq n$.
+The base case for $1 \leq n \leq 3$ is established.
+Now suppose the hypothesis holds for $n \geq 3$.
+For $n + 1$ we have for $ n \leq  a_0 \leq n + 1$ and $n-1 \leq p_n \leq n$:
+\begin{align*}
+ \int_{\Theta} L(x|\theta)^{a_0-p_n} L(x|\theta)^{p_n}\pi(\theta)d\theta < \infty, \\
+\end{align*}
+because $0 \leq a_0 - p_n \leq 1$ and $L(x|\theta)^{p_n}\pi(\theta)$ is proper by hypothesis.
+\end{proof}
+\begin{remark}
+ The power prior on multiple historical data sets is also a proper density.
+\end{remark}
+\begin{proof}
+ Recall that the power prior on multiple historical data sets is of the form~[Eq. 2.9]\citep{Ibrahim2015}:
+ \[ \pi(\theta | \boldsymbol D, a_0) \propto \prod_{k=1}^K L(\theta | D_k)^{a_{0k}} \pi_0(\theta). \]
+Assume, without loss of generality, that $L(\theta |  D_k)^{a_{0k}} > 1$ for all $\theta$ and let $m := \max(\boldsymbol a_0)$ with $\boldsymbol a_0 := \{ a_{01}, a_{02}, \ldots, a_{0K}\}$.
+Then $\pi(\theta | \boldsymbol D, a_0)$ is bounded above by 
+\[  g(\theta) :=  \prod_{k=1}^K L(\theta | D_k)^{m} \pi_0(\theta) =  \left[ \prod_{k=1}^K L(\theta | D_k) \right]^m  \pi_0(\theta) = L(\theta | \boldsymbol D)^m \pi_0(\theta), \]
+which is normalisable following Theorem~\ref{thm:integrability}.
+To relax the assumption made in the beginning, notice that this construction also bounds the case $ 0 \leq  L(\theta |  D_k)^{a_{0k}} \leq 1$ (for some $k$) above.
+\end{proof}
+
+
+\paragraph{TODO:}
+\begin{itemize}
+ \item check these proofs are valid;
+ \item harmonise notation (e.g. $x$ and $D$ are the same thing, need to settle on notation);
+\end{itemize}
+
+% \section*{Acknowledgements}
+\bibliography{power_prior}
+
+% \begin{figure}[!ht]
+% \centering
+% \includegraphics[width=\textwidth, height = 15cm]{figures/}
+% \caption{\textbf{}.
+% }
+% \label{fig:}
+% \end{figure}
+%%
+% \begin{figure}
+% \hfill
+% \subfigure[Title A]{\includegraphics[width=5cm]{img1}}
+% \hfill
+% \subfigure[Title B]{\includegraphics[width=5cm]{img2}}
+% \hfill
+% \caption{\textbf{}.
+% }
+% \label{fig:}
+% \end{figure}
+\end{document}          
