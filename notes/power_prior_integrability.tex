@@ -99,6 +99,27 @@ To relax the assumption made in the beginning, notice that this construction als
  \item harmonise notation (e.g. $x$ and $D$ are the same thing, need to settle on notation);
 \end{itemize}
 
+\section{Roadmap}
+The idea is to review and justify power priors for general regression models.
+Since the integral of~(\ref{eq:power_prior}) with respect to $\theta$ is quite complicated, it is nice and reassuring to know that it is computable, even we don't quite know how to compute it.
+So we need to
+\begin{itemize}
+ \item Review the necessary literature;
+ \item Write down a couple examples of interesting regression models: random effects and Cox model with right-censoring (cure rate/ promotion time model);
+ \item See if we can prove a few more interesting things about these models;
+ \item Show our general results and argue that they provide justification for general use of power priors: they can be normalised, even if sometimes it is very hard to do so.
+ \item Find and curate ``classic'' data sets and write some Stan code to fit the models above to them;
+\end{itemize}
+As I understand it currently, the paper would have review-y feel to it: review what has been done for regression models and then add some of new stuff we've figured out.
+
+\section{Questions}
+
+\begin{enumerate}
+ \item Is it not the case that when employing an unormalised power prior, we can't compute marginal likelihoods? Does that matter in practice?
+ \item Should we be pursuing ways of computing $c(a_0) := \int_{\boldsymbol \Theta} p(t | D, a_0)dt$ for general models? 
+\end{enumerate}
+
+
 % \section*{Acknowledgements}
 \bibliography{power_prior}
 
