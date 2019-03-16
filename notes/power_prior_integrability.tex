@@ -292,7 +292,6 @@ where $\boldsymbol s := \sum_{i=0}^{N_0} y_{0i}$ and $\boldsymbol p^\prime := \p
 \section*{TODO:}
 \begin{itemize}
  \item check proofs;
- \item \textbf{Can we extend Remark~\ref{rmk:convex_norm_constant} to show that $c(a_0)$ is actually monotonic in addition to being strictly convex?}
  \item \textbf{Check the inverse Gaussian calculations: it should always be possible to integrate over $\mu$ and $\lambda$, but I don't know how to guarantee that the full conditional of $\lambda$ is a Gamma distribution. 
  I am probably just making an algebra mistake.}
 \end{itemize}
@@ -316,6 +315,41 @@ As I understand it currently, the paper would have review-y feel to it: review w
  \item Is it not the case that when employing an unormalised power prior, we can't compute marginal likelihoods\footnote{What I mean to say here is that marginal likelihoods don't make any sense unless the prior is properly normalised.}? Does that matter in practice?
  \item Should we be pursuing ways of computing $c(a_0) := \int_{\boldsymbol \Theta} p(t \mid D, a_0)dt$ for general models? 
 \end{enumerate}
+
+\section*{Extra}
+\subsection*{The derivative of $c(a_0)$ for the normal case}
+Define
+\begin{align*}
+ c(a_0) =& g(a_0)h(a_0)w(a_0)z(a_0), \\
+ g(a_0) :=&  \frac{\Gamma\left( \alpha_0 + \frac{N_0}{2}a_0 \right)}{\Gamma(\alpha_0)}, \\
+ h(a_0) :=& \frac{\beta_0^{\alpha_0}}{ \left(  \beta_0 + \Delta a_0\right)^{\alpha_0 + \frac{N_0}{2}a_0}}, \\
+ w(a_0) :=& \left(\frac{\kappa_0}{\kappa_0 + N_0 a_0} \right)^2 , \\
+ z(a_0) :=& (2\pi)^{-N_0 a_0/2}, 
+\end{align*}
+with $\Delta =  \frac{1}{2}\left( \sum_{i=1}^{N_0}(y_{0i}-\bar{y})^2 + \frac{\kappa_0}{\kappa_n} N_0 (\bar{y}-\mu_0)^2 \right)$.
+Thus,
+\begin{equation}
+\label{eq:c_deriv_gaussian}
+ c^\prime = h w z g^\prime + g w z h^\prime + g h z w^\prime + g h w z^\prime.
+\end{equation}
+Notice that only the first term of~(\ref{eq:c_deriv_gaussian}) is positive.
+Since $g^\prime(a_0) = \frac{N_0}{2} \psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right)g(a_0)$, we can write the following inequality:
+\begin{equation}
+ c^\prime(a_0) > 0 \implies \frac{N_0}{2} \psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right) > \frac{|h^\prime(a_0)|}{h(a_0)} + \frac{|w^\prime(a_0)|}{w(a_0)} + \frac{|z^\prime(a_0)|}{z(a_0)}.
+\end{equation}
+Since
+\begin{align}
+ \frac{|h^\prime(a_0)|}{h(a_0)}  &=  \frac{\Delta\left( \alpha_0 + \frac{N_0}{2} a_0 \right) }{\Delta a_0 + \beta_0} + \frac{N_0}{2}\log{\left( \Delta a_0+ \beta_0 \right) }, \\
+ \frac{|w^\prime(a_0)|}{w(a_0)}  &= \frac{2N_0}{a_0N_0+\kappa_0},\\
+\frac{|z^\prime(a_0)|}{z(a_0)}  &= \log(2\pi) \frac{N_0}{2},
+\end{align}
+we arrive at
+\begin{align}
+ \frac{N_0}{2} \psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right) &>  \frac{\Delta\left( \alpha_0 + \frac{N_0}{2} a_0 \right) }{\Delta a_0 + \beta_0} + \frac{N_0}{2}\log{\left( \Delta a_0+ \beta_0 \right) } + \frac{2N_0}{a_0N_0+\kappa_0} + \log(2\pi) \frac{N_0}{2}, \\
+\psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right) &>  \frac{\Delta\left( 2\alpha_0 + N_0a_0 \right) }{N_0\left(\Delta a_0 + \beta_0\right)} + \log{\left( \Delta a_0+ \beta_0 \right) } + \frac{4}{a_0N_0+\kappa_0} + \log(2\pi)
+\end{align}
+
+
 
 
 % \section*{Acknowledgements}
