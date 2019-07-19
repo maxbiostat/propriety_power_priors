@@ -4,9 +4,7 @@ y0 <- rpois(N0, lambda = true.lambda)
 
 library(rstan)
 rstan_options(auto_write = TRUE)
-
 options(mc.cores = 4)
-rstan:::rstudio_stanc("stan/simple_poisson_prior.stan")
 
 #### Sampling from the "prior"
 compiled.model.prior <- stan_model("stan/simple_poisson_prior.stan")
@@ -103,13 +101,89 @@ a0.dt <- data.frame(a0 = c(a0.unnorm, a0.norm),
 )
 
 library(ggplot2)
-ggplot(a0.dt, aes(x = a0, fill = normalisation, colour = normalisation)) +
-  geom_density() +
+a0_dist <- ggplot(a0.dt, aes(x = a0, fill = normalisation, colour = normalisation)) +
+  geom_density(alpha = .4) +
   stat_function(fun = function(x) dbeta(x, delta, nu),
                 geom = "line", colour = "black", linetype = "longdash") + 
   ggtitle("Poisson") +
   facet_grid(normalisation~., scales = "free") +
   scale_y_continuous("Density", expand = c(0, 0)) +
   scale_x_continuous(expression(a[0]), expand = c(0, 0)) +
-  theme_bw()
+  theme_bw(base_size = 20)
+a0_dist
+ggsave("../figures/a0_posterior_Poisson.pdf", a0_dist)
+###
 
+unnorm.lambda.dt <- data.frame(lambda = extract(unnorm.posterior.poisson, 'lambda')$lambda)
+unnorm.lambda.dt$normalisation <- "unnormalised"
+norm.lambda.dt <- data.frame(lambda = extract(norm.posterior.poisson, 'lambda')$lambda)
+norm.lambda.dt$normalisation <- "normalised"
+par.posteriors <- rbind(unnorm.lambda.dt, norm.lambda.dt)
+
+lambda_posterior <- ggplot(data = par.posteriors, aes(x = lambda, colour = normalisation, fill = normalisation)) +
+  geom_density(alpha = .4) +
+  scale_x_continuous(expression(lambda), expand = c(0, 0)) +
+  scale_y_continuous("Density", expand = c(0, 0)) +
+  geom_vline(xintercept = true.lambda, linetype = "dashed") +
+  theme_bw(base_size = 20)
+
+lambda_posterior
+
+ggsave("../figures/parameter_posterior_Poisson.pdf", lambda_posterior)
+
+#####################
+
+get_estimates_a0 <- function(x){
+  po.data <- list(
+    N0 = N0,
+    y0 = y0,
+    alpha0 = alpha_0,
+    beta0 = beta_0,
+    a_0 = x
+  )
+  res <- sampling(compiled.model.prior, data = po.data, refresh = 0)
+  return(res)
+}
+K <- 25
+maxA <- 5
+a0s <- seq(0.01, maxA, length.out = K)
+# a0s <- pracma::logseq(0.01, maxA, n = K)
+# a0s <- c(seq(0.05, 1, length.out = K-3), seq(1.2, maxA, length.out = 3))
+system.time(
+  results <- lapply(a0s, get_estimates_a0)  
+)
+
+### Sensitivity to a_0: parameter estimates
+mean_pars <- data.frame(
+  do.call(rbind,
+          lapply(results, function(r) summary(r)$summary[1:2, "mean"])        
+  )
+) 
+mean_pars$a0 <- a0s
+round(mean_pars, 3)
+#
+sd_pars <- data.frame(
+  do.call(rbind,
+          lapply(results, function(r) summary(r)$summary[1:2, "sd"])        
+  )
+) 
+sd_pars$a0 <- a0s
+round(sd_pars, 4)
+
+
+library(ggplot2)
+
+ggplot(data = mean_pars, aes(x = a0, y = lambda)) +
+  geom_line() +
+  scale_x_continuous(expression(a[0]), expand = c(0, 0)) +
+  scale_y_continuous(expression(Mean(lambda)), expand = c(0, 0), limits = c(1.5, 2.2)) +
+  theme_bw(base_size = 20) +
+  geom_hline(yintercept = true.lambda, linetype = "dashed") +
+  NULL
+
+ggplot(data = sd_pars, aes(x = a0, y = lambda)) +
+  geom_line()+
+  scale_x_continuous(expression(a[0]), expand = c(0, 0)) +
+  scale_y_continuous(expression(SD(lambda)), expand = c(0, 0)) +
+  theme_bw(base_size = 20) +
+  NULL

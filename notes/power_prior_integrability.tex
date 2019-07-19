@@ -2,7 +2,6 @@
 \usepackage{geometry}
 \fontfamily{times}
 \geometry{verbose,tmargin=30mm,bmargin=25mm,lmargin=25mm,rmargin=25mm}
-\pagestyle{empty}
 % end configs
 \usepackage{setspace,relsize}               
 \usepackage{moreverb}                        
@@ -41,17 +40,23 @@
 % Key-words: ;; ; ; . 
 % \end{abstract}
 
-\section*{Background}
+\section{Background}
 
-Power priors are cool. [bunch of citations for propriety of GLM, Cox model, exponential family, etc]
+\begin{itemize}
+ \item Power priors are cool. [bunch of citations for propriety of GLM, Cox model, exponential family, etc];
+ \item In this paper we explore the situation where the initial prior $\pi$ is proper;
+ \item We also explore ways of approximating the normalising constant $c(a_0)$ for models where it cannot be written in closed-form. 
+\end{itemize}
 
-\section*{Results}
-
+\textbf{Definition}
 The data $D_0 \in \mathcal{X} \subseteq \mathbb{R}^p$  and the parameter $\theta \in \Theta \subseteq \mathbb{R}^q$ and $a_0 \geq 0$.
 \begin{equation}
 \label{eq:power_prior}
  p(\theta \mid D_0, a_0) \propto L(D_0 \mid \theta)^{a_0}\pi(\theta)
 \end{equation}
+
+
+\section{Results}
 
 We want to show under which conditions
 \[\int_{\Theta} L( D_0 \mid \theta)^{a_0}\pi(\theta) d\theta <\infty.\]
@@ -92,7 +97,7 @@ which is normalisable following Theorem~\ref{thm:integrability}.
 To relax the assumption made in the beginning, notice that this construction also bounds the case $ 0 \leq  L(\theta \mid  D_k)^{a_{0k}} \leq 1$ (for some $k$) above.
 \end{proof}
 
-\section*{Properties of the normalising constant $c(a_0)$}
+\subsection{Properties of the normalising constant $c(a_0)$}
 
 \begin{remark}
 \label{rmk:convex_norm_constant}
@@ -106,40 +111,41 @@ Define the normalising constant as a function $c : [0, \infty) \to (0, \infty)$,
 \end{equation}
 which is positive and continuous on its domain.
 The first and second derivatives are
-\begin{align*}
+\begin{align}
+\label{eq:derivative_ca0}
 c^\prime(a_0) &= \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta) d\theta, \\
 c^{\prime\prime}(a_0) &= \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log L(D_0\mid\theta)]^2 d\theta,
-\end{align*}
-when the integrals exist.
+\end{align}
+when the integrals exist. %% LM: to see why, recall that L(D|t) bounds log L(D|t) above.
 From this we conclude that $c$ is (strictly) convex and $c^\prime$ is monotonic, because $c^{\prime\prime}$ is always positive.
-% To show that $c$ is also monotonic, we need to show that $\text{sgn}(c^\prime)$ is constant.
-% Suppose without loss of generality that $c^\prime(0) < 0$ and that $c^\prime(w) > 0$ for some $w > 0$. 
-% Since $c^\prime$ is continuous, the intermediate value theorem would imply there exists $u$ such that $c^\prime(u) = 0$.
-
-% Since if $L(D | \theta^\prime) > L(D | \theta^{\prime\prime})$  implies that $L(D | \theta^\prime)^{\delta} > L(D | \theta^{\prime\prime})^{\delta}$ for any $\delta >0$, it must be the case that $\text{sgn}(c^\prime(u)) = \text{sgn}(c^\prime(w))$ for all $u, w \in [0, \infty)$.
-% Using Jensen's inequality, one can show that
-% \[  \frac{a_0}{c(a_0)}c^\prime(a_0) \leq \log(1) = 0. \]
-% Define $ y(\theta) = L(D_0 | \theta)^{a_0} $ such that $c(a_0) = E_\pi[ y(\theta)]$.
-% \[ \frac{1}{c(a_0)}E_\pi[\log y(\theta)] =  \frac{a_0}{c(a_0)}E_\pi[\log L(D_0\mid\theta) ] \leq  \log \left( \frac{1}{c(a_0)} E_\pi[y(\theta)] \right) = 0 \]
-% Since $a_0/c(a_0)$ is positive,
 \end{proof}
 
 
-\subsection*{Exponential family}
+\subsubsection{Exponential family}
+
+[INTRO]
 
 \begin{align}
- \label{eq:expo_family_const}
  c(a_0) &=  \int_{\boldsymbol\Theta} \left[ h(x)\exp\left( \boldsymbol\eta(\theta) \cdot \boldsymbol T(x) - A(\theta) \right) \right]^{a_0}\pi(\theta) d\theta, \\
+  \label{eq:expo_family_const}
  &= h(x)^{a_0}\int_{\boldsymbol\Theta} \exp \left( a_0 [\boldsymbol\eta(\theta) \cdot \boldsymbol T(x)] \right) \exp\left( - a_0 A(\theta) \right) \pi(\theta) d\theta.
 \end{align}
 The derivative evaluates to 
 \begin{equation}
- c^\prime(a_0) = \log(h(x)) + \int_{\boldsymbol\Theta} f_{a_0}(D_0; \theta) \left[  \boldsymbol\eta(\theta) \cdot \boldsymbol T(x) \right] d\theta -  \int_{\boldsymbol\Theta} f_{a_0}(D_0; \theta)  A(\theta) d\theta,
+ c^\prime(a_0) = \log(h(D_0)) + \int_{\boldsymbol\Theta} f_{a_0}(D_0; \theta) \left[  \boldsymbol\eta(\theta) \cdot \boldsymbol T(D_0) \right] d\theta -  \int_{\boldsymbol\Theta} f_{a_0}(D_0; \theta)  A(\theta) d\theta,
 \end{equation}
-where $f_{a_0}(D_0; \theta) := \left[ h(x)\exp\left( \boldsymbol\eta(\theta) \cdot \boldsymbol T(x) - A(\theta) \right) \right]^{a_0}\pi(\theta)$.
+where $f_{a_0}(D_0; \theta) := \left[ h(D_0)\exp\left( \boldsymbol\eta(\theta) \cdot \boldsymbol T(D_0) - A(\theta) \right) \right]^{a_0}\pi(\theta)$.
 
-\subsection*{Examples}
-\subsubsection*{Gaussian}
+Now suppose $\pi(\theta)$ is conjugate to $L(D_0 \mid \theta)$~\citep{Diaconis1979}:
+\begin{equation}
+ \label{eq:conj_exp_family}
+ \pi(\theta \mid \eta) = 
+\end{equation}
+
+
+\subsection{Examples}
+\subsubsection{Gaussian}
+
 Suppose one has $N_0$ historical observations $y_{i0} \in \mathbb{R}, i = 1, \ldots, N_0$.
 Here we will choose a Normal-gamma conjugate model:
 \begin{align*}
@@ -152,13 +158,16 @@ The posterior distribution is again a normal-gamma distribution and the normalis
 \begin{align}
  \label{eq:cA0_gaussian}
  c(a_0) &= \frac{\Gamma(\alpha_n)}{\Gamma(\alpha_0)}\frac{\beta_0^{\alpha_0}}{\beta_n^{\alpha_n}} \left(\frac{\kappa_0}{\kappa_n} \right)^2 (2\pi)^{-N_0 a_0/2},\\
+ \nonumber
  \alpha_n &= \alpha_0 + \frac{1}{2}a_0N_0 \\
+ \nonumber
  \kappa_n &= \kappa_0 + a_0N_0 \\
+ \nonumber
  \beta_n  &= \beta_0 + \frac{1}{2}\left( a_0\sum_{i=1}^{N_0}(y_{0i}-\bar{y})^2 + \left(\kappa_0 a_0 N_0 (\bar{y}-\mu_0)^2\right)/\kappa_n \right),
 \end{align}
 with $\bar{y} = \sum_{i=1}^{N_0} y_{0i}/N_0$.
 
-\subsubsection*{Linear regression with a normal inverse Gamma prior}
+\subsubsection{Linear regression with a normal inverse-Gamma prior}
 
 Suppose $\boldsymbol X_0$ is a $N_0 \times P$ full-rank matrix of predictors and $\boldsymbol y_0 = \{y_{01}, \ldots, y_{0N_0} \}$ is a vector of observations.
 For illustrative purposes, we will employ a mean and variance parametrisation, which naturally leads to a normal inverse-gamma conjugate prior.
@@ -174,14 +183,19 @@ The posterior is again a normal inverse gamma and thus
 \begin{align}
  \label{eq:cA0_regression}
 c(a_0) &= \sqrt{\frac{|\boldsymbol\Lambda_n|}{|\boldsymbol\Lambda_0^{-1}|}} \frac{\beta_0^{\alpha_0}}{\beta_n^{\alpha_n}}\frac{\Gamma(\alpha_0)}{\Gamma(\alpha_n)}  (2\pi)^{-N_0 a_0/2},\\
+\nonumber
 \boldsymbol\Lambda_n &= \boldsymbol X_{\star}^\top\boldsymbol X_{\star} + \boldsymbol \Lambda_0^{-1}, \\
+\nonumber
 \boldsymbol\mu_n &= \boldsymbol\Lambda_n^{-1}\left(\boldsymbol\Lambda_0^{-1}\boldsymbol\mu_0 + \boldsymbol X_{\star}^\top\boldsymbol y_{\star} \right)  \\
+\nonumber
 \alpha_n &= \alpha_0 + \frac{1}{2}a_0N_0,\\
+\nonumber
 \beta_n &= \beta_0 + \frac{1}{2}\left( \boldsymbol y_{\star}^\top \boldsymbol y_{\star} + \boldsymbol \mu_0^\top \boldsymbol \Lambda_0^{-1} \boldsymbol \mu_0 - \boldsymbol\mu_n^\top \boldsymbol \Lambda_n \boldsymbol \mu_n  \right),
 \end{align}
 where $\boldsymbol X_{\star} = \sqrt{a_0} \boldsymbol X_0$ and $\boldsymbol y_{\star} = \sqrt{a_0} \boldsymbol y_0$, and $|A|$ denotes the determinant of $A$.
 
-\subsubsection*{Bernoulli}
+\subsubsection{Bernoulli}
+
 The historical data consist of $N_0$ Bernoulli trials $x_{0i} \in \{0,1\}$.
 Suppose there were $y_0 = \sum_{i=1}^{N_0}x_{0i}$ successes.
 The model reads
@@ -194,17 +208,17 @@ This leads to a Beta posterior distribution for $\theta$,
  \label{eq:bernoulli_posterior}
  p(\theta | N_0, y_0, a_0) \propto \theta ^{a_0 y_0 + c - 1} (1-\theta)^{a_0 (N_0 -y_0) + d - 1},
 \end{equation}
-and hence 
+and hence~\citep{Neuenschwander2009}:
 \begin{equation}
  \label{eq:cA0_bernoulli}
- c(a_0) = \text{Beta}(a_0 y_0 + c, a_0 (N_0 -y_0) + d).
+ c(a_0) = \frac{\mathcal{B}(a_0 y_0 + c, a_0 (N_0 -y_0) + d)}{\mathcal{B}(c, d)},
 \end{equation}
-where $\text{Beta}(w, z) = \frac{\Gamma(w)\Gamma(z)}{\Gamma(w + z)}$.
+where $\mathcal{B}(w, z) = \frac{\Gamma(w)\Gamma(z)}{\Gamma(w + z)}$.
 
-% \subsubsection*{Binomial}
+% \subsubsection{Binomial}
 % The binomial variant is quite similar to the Bernoulli model, with the model
 
-\subsubsection*{Gamma}
+\subsubsection{Gamma}
 
 The historical data consist of $N_0$ observations $\boldsymbol y_0 =\{y_{01}, \ldots , y_{0N_0}\}$, $y_{0i} > 0$.
 And the model is
@@ -222,12 +236,12 @@ where $\boldsymbol p := \prod_{i =1}^{N_0} y_{0i}$ and $\boldsymbol s := \sum_{i
 Noticing that the full conditional distribution of $\beta$ is (the kernel of) a Gamma distribution leads to
 \begin{align}
  \label{eq:cA0_gamma}
- c(a_0) = \frac{1}{\boldsymbol p^{a_0} }\int_0^\infty \frac{\Gamma(a_0N_0\alpha + \eta_\beta)}{\left( a_0\boldsymbol s + \nu_\beta \right)^{a_0N_0\alpha + \eta_\beta}} \frac{\alpha^{\eta_\alpha -1} \exp(- ( \nu_\alpha - a_0 \log \boldsymbol p) \alpha)}{\Gamma(\alpha)^{a_0 N_0}} d\alpha.
+ c(a_0) = \frac{\nu_\alpha^{\eta_\alpha}\nu_\beta^{\eta_\beta}}{\Gamma(\eta_\alpha)\Gamma(\eta_\beta)} \frac{1}{\boldsymbol p^{a_0} } \times \int_0^\infty \frac{\Gamma(a_0N_0\alpha + \eta_\beta)}{\left( a_0\boldsymbol s + \nu_\beta \right)^{a_0N_0\alpha + \eta_\beta}} \frac{\alpha^{\eta_\alpha -1} \exp(- ( \nu_\alpha - a_0 \log \boldsymbol p) \alpha)}{\Gamma(\alpha)^{a_0 N_0}} d\alpha.
 \end{align}
-Whilst the expression in~(\ref{eq:cA0_gamma}) cannot be obtained in closed-form, it can be approximated via quadrature.
+Whilst the expression in~(\ref{eq:cA0_gamma}) cannot be obtained in closed-form, it can be approximated \textit{via} quadrature.
 
 
-\subsubsection*{Inverse Gaussian}
+\subsubsection{Inverse Gaussian}
 
 The historical data consist of $N_0$ observations $\boldsymbol y_0 =\{y_{01}, \ldots , y_{0N_0}\}$, $y_{0i} > 0$.
 The model is
@@ -240,29 +254,22 @@ The model is
 The posterior distribution is
 \begin{align}
   \nonumber
- p(\mu, \lambda | \boldsymbol y_0, a_0) &\propto \left(\frac{\lambda}{2\pi}\right)^{\frac{1}{2}a_0N_0} \boldsymbol p^{-\frac{3}{2} a_0} \exp\left( -\left[ \frac{a_0\boldsymbol s}{2\mu^2} -\frac{a_0N_0}{\mu} + \frac{a_0 \boldsymbol s^\prime}{2} \right]\lambda\right) \times \\
+ p(\mu, \lambda | \boldsymbol y_0, a_0) &\propto \left(\frac{\lambda}{2\pi}\right)^{\frac{1}{2}a_0N_0} \boldsymbol p^{-\frac{3}{2} a_0} \exp\left( -a_0\left[ \frac{\boldsymbol s}{2\mu^2} -\frac{N_0}{\mu} + \frac{\boldsymbol s^\prime}{2} \right]\lambda\right) \times \\
  \label{eq:posterior_invGauss}
  &\mu^{\alpha_\mu-1}\exp(-\beta_\mu \mu) \lambda^{\alpha_\lambda -1} \exp(-\beta_\lambda  \lambda),
 \end{align}
 where  $\boldsymbol p := \prod_{i =1}^{N_0} y_{0i}$,  $\boldsymbol s := \sum_{i =1}^{N_0} y_{0i}$ and $\boldsymbol s^\prime := \sum_{i =1}^{N_0} \frac{1}{y_{0i}}$.
-Similar to the Gamma case, one can marginalise over $\lambda$ by noticing its full conditional distribution is a Gamma distribution:
+Similar to the Gamma case, one can marginalise over $\lambda$ by noticing its full conditional distribution is a Gamma distribution (see Appendix):
 \begin{align}
  \nonumber
- c(a_0) &= (2\pi)^{-\frac{1}{2}a_0N_0} \boldsymbol p^{-\frac{3}{2} a_0} \Gamma\left( \frac{a_0N_0 + 2\alpha_\lambda}{2} \right) \times \\
+ c(a_0) &= \frac{\beta_\mu^{\alpha_\mu}\beta_\lambda^{\alpha_\lambda} }{\Gamma(\alpha_\mu)\Gamma(\alpha_\lambda)} \times (2\pi)^{-\frac{1}{2}a_0N_0} \boldsymbol p^{-\frac{3}{2} a_0} \Gamma\left( \frac{a_0N_0 + 2\alpha_\lambda}{2} \right) \times \\
  \label{eq:cA0_invGaussian}
- & \int_0^\infty \left( -\frac{a_0N_0}{\mu} + \frac{a_0\boldsymbol s }{2\mu^2} + \frac{\boldsymbol s^\prime}{2} + \beta_\lambda \right)^{-\frac{a_0N_0 + 2\alpha_\lambda}{2}} \mu^{\alpha_\mu-1}\exp(-\beta_\mu \mu) d\mu
+ & \int_0^\infty \left( \frac{a_0\boldsymbol s}{2\mu^2} -\frac{a_0N_0}{\mu} + \frac{ a_0 \boldsymbol s^\prime}{2} + \beta_\lambda \right)^{-\frac{a_0N_0 + 2\alpha_\lambda}{2}} \mu^{\alpha_\mu-1}\exp(-\beta_\mu \mu) d\mu.
 \end{align}
-We need to show that the full conditional of $\lambda$ will~\textbf{always} be a Gamma distribution.
-Recalling that $\mu > 0$, we need to prove that 
-\[ \left( -\frac{a_0N_0}{\mu} + \frac{a_0\boldsymbol s }{2\mu^2} + \frac{\boldsymbol s^\prime}{2} + \beta_\lambda \right) = \frac{-2a_0N_0\mu + a_0\boldsymbol s + (\boldsymbol s^\prime + 2\beta_\lambda)\mu^2 }{2\mu^2} > 0,\]
-whence, equivalently,
-\[ (\boldsymbol s^\prime + 2\beta_\lambda)\mu^2 -2a_0N_0\mu + a_0\boldsymbol s > 0. \]
-Since $(\boldsymbol s^\prime + 2\beta_\lambda) > 0$, this happens whenever
-\[ \Delta  =  4a_0^2N_0^2 - 4(\boldsymbol s^\prime + 2\beta_\lambda) a_0\boldsymbol s < 0, \]
-i.e., when $a_0N_0^2 -(\boldsymbol s^\prime + 2\beta_\lambda)\boldsymbol s < 0$.
-\textbf{[This needs completion and revision]}.
+Again, while the integral in~(\ref{eq:cA0_invGaussian}) is not known in closed-form, it can be approximated~\textit{via} quadrature.
 
-\subsubsection*{Poisson}
+
+\subsubsection{Poisson}
 
 Suppose the historical data consists of $N_0$ observations $y_{0i} \in \{0, 1, \ldots \}$.
 The model is 
@@ -277,47 +284,101 @@ The posterior distribution is
 where $\boldsymbol s := \sum_{i=0}^{N_0} y_{0i}$ and $\boldsymbol p^\prime := \prod_{i = 0}^{N_0} y_{0i}!$, leading to
 \begin{equation}
  \label{eq:cA0_poisson}
- c(a_0) = \frac{1}{\boldsymbol {p^\prime}^{a_0} } \frac{\Gamma(a_0\boldsymbol s + \alpha_0)}{\left( a_0N_0 + \beta_0 \right)^{a_0\boldsymbol s + \alpha_0} }
+ c(a_0) = \frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0)}\frac{1}{\boldsymbol {p^\prime}^{a_0} } \frac{\Gamma(a_0\boldsymbol s + \alpha_0)}{\left( a_0N_0 + \beta_0 \right)^{a_0\boldsymbol s + \alpha_0} }.
 \end{equation}
 
-\section*{Comments}
-\begin{itemize}
- \item  Q: Why is Remark~\ref{rmk:convex_norm_constant} -- and other results in the same spirit -- useful? 
- 
- A: because for many models we will have NO IDEA what $c(a_0)$ is but may still want to normalise the power prior and hence will have to try and approximate it. 
- Computing $c(a_0)$ \textit{via} traditional normalising constant estimation for arbitrary values of $a_0$ within an MCMC run is impratical.
- Hence, we would need curve estimation/approximation methods to get quick and reasonably accurate estimates of the~\textit{function} $c(a_0)$, and knowing that it is convex or monotonic or whatever would help restrict the search space.
-\end{itemize}
+
+\subsection{Efficiently computing $c(a_0)$}
+
+For many models, $c(a_0)$ is not known in closed form, and hence must be approximated if we wish to compute it.
+An example where this would be important is when we need to normalise the power prior for use within a Markov chain Monte Carlo (MCMC) procedure.
+
+Here we take the following approach to approximating $c(a_0)$: first, define a grid of values $\boldsymbol a^{\text{est}} = \{ a^{\text{est}}_1, \ldots, a^{\text{est}}_J \}$ for a typically modest number $J$.
+Using a marginal likelihood approximation method (see below), compute an estimate of $c(a_0)$ for each point in $\boldsymbol a^{\text{est}}$, obtaining a set of estimates.
+Consider an approximating function $g_{\boldsymbol\xi} : \mathbb{R}^+ \to \mathbb{R}^+$, indexed by a set of parameters $\boldsymbol\xi$.
+For instance, $g_{\boldsymbol\xi}$ could be a linear model, a generalised additive model (GAM) or a Gaussian process.
+We can then use  $\boldsymbol a^{\text{est}}$ and $\hat{\boldsymbol c}$ as data to learn about $\boldsymbol\xi$.
+Once we obtain an estimate  $\hat{\boldsymbol \xi}$, $c(\cdot)$ can be approximated at any point $z$ by the prediction $g_{\hat{\boldsymbol \xi}}(z)$.
+
+In order to simplify implementation, in our applications we found it useful to create a grid of size $K \gg J$, $\boldsymbol a^{\text{pred}} = \{ a^{\text{pred}}_1, \ldots, a^{\text{pred}}_K \}$, and then compute the predictions $\boldsymbol g^{\text{pred}} := g_{\hat{\boldsymbol \xi}}( \boldsymbol a^{\text{pred}} )$.
+We can then use this dictionary of values to obtain an approximate value of $c(a_0)$ by simple interpolation.
+This approach allows one to evaluate several approximating functions without having to implement each one separately.
+
+A key insight is that $c(a_0)$ is convex, so we need only to make sure our grid covers the region where its derivative changes signs when designing both $\boldsymbol a^{\text{est}}$ and $\boldsymbol a^{\text{pred}}$.
+
+A caveat of this grid approach is that the maximum end point needs to chosen in advance, effectively bounding the space of $a_0$ considered. 
+For many applications, interest usually lies with $a_0 \in [0, 1]$, and in applications where one is interested in $a_0 > 1$, one usually has a good idea of the range of reasonable of values, since this information is also useful in specifying the prior $\pi(a_0)$.
+In fact, prior information can be used to set the maximum: let $p$ be a fixed probability and then set the maximum grid value $M$ such that
+\[ \int_0^M \pi(a) da = p. \]
+One can pick $p = 0.9999$, for instance so as to have a high chance of not sampling any values outside the grid.
+
+\textbf{Effect of discretising the approximating function}.
+In order to evaluate the effect of a discretisation of $g_{\boldsymbol\xi}$ on inferences, we evaluated the effect of varying the prediction grid size $K$.
+For three examples where we know the truth, namely the Gaussian and Bernoulli distributions and a linear regression with a normal inverse-Gamma prior, we compared estimates of parameters -- including $a_0$ -- and marginal likelihoods obtained by using the true $c(a_0)$ and the discretised $g_{\boldsymbol\xi}$ with $K =  50, 100, 1000,~\text{and}\: 10, 000$.
+For prediction, we use a simple, linear grid, with end points $a^{\text{pred}}_1 = 0$ and $a^{\text{pred}}_K = 10$.
+For all experiments we fixed the estimation grid size at $J = 10$ with the same endpoints as the prediction grid $a^{\text{est}}_1 = 0$, $a^{\text{est}}_K = 10$, but placing most ($J-3 = 7$) points on the $[0, 1]$ interval.
+
+\textbf{Marginal likelihood estimation}.
+We employed  bridge sampling to compute marginal likelihoods, i.e., $c(a_0)$, implemented in the R package~\textbf{bridgesampling}~\citep{Gronau2017}.
+We used HMC as before, with four independent chains of $2000$ iterations each, removing half of each chain as burn-in/warm-up, resulting in $4000$ samples being kept.
+
+
+% \section*{Comments}
+% \begin{itemize}
+%  \item  Q: Why is Remark~\ref{rmk:convex_norm_constant} -- and other results in the same spirit -- useful? 
+%  
+%  A: because for many models we will have NO IDEA what $c(a_0)$ is but may still want to normalise the power prior and hence will have to try and approximate it. 
+%  Computing $c(a_0)$ \textit{via} traditional normalising constant estimation for arbitrary values of $a_0$ within an MCMC run is impratical.
+%  Hence, we would need curve estimation/approximation methods to get quick and reasonably accurate estimates of the~\textit{function} $c(a_0)$, and knowing that it is convex or monotonic or whatever would help restrict the search space.
+% \end{itemize}
 
 \section*{TODO:}
 \begin{itemize}
  \item check proofs;
- \item \textbf{Check the inverse Gaussian calculations: it should always be possible to integrate over $\mu$ and $\lambda$, but I don't know how to guarantee that the full conditional of $\lambda$ is a Gamma distribution. 
- I am probably just making an algebra mistake.}
+ \item show that the integrals in (\ref{eq:derivative_ca0}) \textbf{always} exist.
 \end{itemize}
 
-\section{Roadmap}
-The idea is to review and justify power priors for general regression models.
-Since the integral of~(\ref{eq:power_prior}) with respect to $\theta$ is quite complicated, it is nice and reassuring to know that it is computable, even we don't quite know how to compute it.
-So we need to
-\begin{itemize}
- \item Review the necessary literature;
- \item Write down a couple examples of interesting regression models: random effects and Cox model with right-censoring (cure rate/ promotion time model);
- \item See if we can prove a few more interesting things about these models;
- \item Show our general results and argue that they provide justification for general use of power priors: they can be normalised, even if sometimes it is very hard to do so.
- \item Find and curate ``classic'' data sets and write some Stan code to fit the models above to them;
-\end{itemize}
-As I understand it currently, the paper would have review-y feel to it: review what has been done for regression models and then add some of new stuff we've figured out.
+% \section{Roadmap}
+% The idea is to review and justify power priors for general regression models.
+% Since the integral of~(\ref{eq:power_prior}) with respect to $\theta$ is quite complicated, it is nice and reassuring to know that it is computable, even we don't quite know how to compute it.
+% So we need to
+% \begin{itemize}
+%  \item Review the necessary literature;
+%  \item Write down a couple examples of interesting regression models: random effects and Cox model with right-censoring (cure rate/ promotion time model);
+%  \item See if we can prove a few more interesting things about these models;
+%  \item Show our general results and argue that they provide justification for general use of power priors: they can be normalised, even if sometimes it is very hard to do so.
+%  \item Find and curate ``classic'' data sets and write some Stan code to fit the models above to them;
+% \end{itemize}
+% As I understand it currently, the paper would have review-y feel to it: review what has been done for regression models and then add some of new stuff we've figured out.
 
 \section{Questions}
 
 \begin{enumerate}
- \item Is it not the case that when employing an unormalised power prior, we can't compute marginal likelihoods\footnote{What I mean to say here is that marginal likelihoods don't make any sense unless the prior is properly normalised.}? Does that matter in practice?
- \item Should we be pursuing ways of computing $c(a_0) := \int_{\boldsymbol \Theta} p(t \mid D, a_0)dt$ for general models? 
+%  \item Is it not the case that when employing an unormalised power prior, we can't compute marginal likelihoods\footnote{What I mean to say here is that marginal likelihoods don't make any sense unless the prior is properly normalised.}? Does that matter in practice? LM: Yeah, you need a properly normalised prior.
+%  \item Should we be pursuing ways of computing $c(a_0) := \int_{\boldsymbol \Theta} p(t \mid D, a_0)dt$ for general models? LM: YES!
+\item \textbf{The shape of $c(a_0)$}: From both a theoretical and practical point of view, it'd be nice to know when $c(a_0)$ is non-monotonic like for the Gaussian case [and a very special choice of hyperparameters] and when it's just a straight line, as for most models I've tested. 
+Appendix~\ref{sec:ca0_norm_deriv} contains some rudimentary analysis for the Gaussian case...
+\item \textbf{Exponential family}: it could be potentially fruitful to explore the results in Eq.~\ref{eq:expo_family_const} a bit more and maybe help answer the question above; under which conditions will a likelihood in the exponential family lead to a monotonic (and hence linear since we know it's definitely convex) $c(a_0)$?
+\item \textbf{Sensitivity to $a_0$}: (i) is this important? (ii)  how to define sensitivity? one thing to look at is variance reduction as $a_0 \to \infty$...
+At any rate, we know empirically that for some models (e.g. logistic regression) including the normalising constant is of utmost importance, whereas for others (e.g. Bernoulli), it doesn't seem to matter much.
+\textbf{Important:} When I say ``matters'' (or not), I'm talking about the effect on estimates of actual parameters, like regression coefficients or success probability.
+Including $c(a_0)$ always makes a HUGE difference for ``estimates'' of $a_0$, obviously.
+\item \textbf{Situations with $a_0 > 1$} Should we pursue this? It seems to me we should at least consider it, since we show that the power prior is proper for $a_0 > 1$ also.
 \end{enumerate}
 
-\section*{Extra}
-\subsection*{The derivative of $c(a_0)$ for the normal case}
+
+\section*{Acknowledgements}
+
+LMC would like to thank Leo Bastos (PROCC/Fiocruz) for helpful discussions and Dr. Beat Neuenschwander for clarifications regarding his paper.
+This study was financed in part by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES) Finance Code 001.
+LMC is supported by a postodoctoral fellowship from CAPES.
+
+\bibliography{../biblio/power_prior}
+
+\appendix
+
+\section{The derivative of $c(a_0)$ for the normal case}
+\label{sec:ca0_norm_deriv}
 Define
 \begin{align*}
  c(a_0) =& g(a_0)h(a_0)w(a_0)z(a_0), \\
@@ -346,14 +407,20 @@ Since
 we arrive at
 \begin{align}
  \frac{N_0}{2} \psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right) &>  \frac{\Delta\left( \alpha_0 + \frac{N_0}{2} a_0 \right) }{\Delta a_0 + \beta_0} + \frac{N_0}{2}\log{\left( \Delta a_0+ \beta_0 \right) } + \frac{2N_0}{a_0N_0+\kappa_0} + \log(2\pi) \frac{N_0}{2}, \\
-\psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right) &>  \frac{\Delta\left( 2\alpha_0 + N_0a_0 \right) }{N_0\left(\Delta a_0 + \beta_0\right)} + \log{\left( \Delta a_0+ \beta_0 \right) } + \frac{4}{a_0N_0+\kappa_0} + \log(2\pi)
+\psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right) &>  \frac{\Delta\left( 2\alpha_0 + N_0a_0 \right) }{N_0\left(\Delta a_0 + \beta_0\right)} + \log{\left( \Delta a_0+ \beta_0 \right) } + \frac{4}{a_0N_0+\kappa_0} + \log(2\pi).
 \end{align}
 
+\section{Full conditional of $\lambda$ for an Inverse Gaussian likelihood}
 
-
-
-% \section*{Acknowledgements}
-\bibliography{../biblio/power_prior}
+We need to show that the full conditional of $\lambda$ will~\textbf{always} be a Gamma distribution.
+Recalling that $\mu > 0$, we need to prove that 
+\[ \left( -\frac{a_0N_0}{\mu} + \frac{a_0\boldsymbol s }{2\mu^2} + \frac{a_0\boldsymbol s^\prime}{2} + \beta_\lambda \right) = \frac{-2a_0N_0\mu + a_0\boldsymbol s + (a_0 \boldsymbol s^\prime + 2\beta_\lambda)\mu^2 }{2\mu^2} \geq 0,\]
+whence, equivalently,
+\[ \boldsymbol s^\prime\mu^2 -2N_0\mu + \boldsymbol s \geq 0. \]
+Since $\boldsymbol s^\prime > 0$, this happens whenever
+\[ 4N_0^2 - 4\boldsymbol s^\prime\boldsymbol s \leq 0, \]
+% i.e., when $N_0^2 - \boldsymbol s^\prime\boldsymbol s < 0$,
+which is always true, by direct application of Titu's lemma.
 
 % \begin{figure}[!ht]
 % \centering
@@ -363,36 +430,57 @@ we arrive at
 % \label{fig:}
 % \end{figure}
 %%
+\newpage
 \begin{figure}
 \hfill
-\subfigure[Gaussian]{\includegraphics[width=7cm]{../figures/Gaussian.pdf}}
+% 
+\subfigure[Gaussian]{\includegraphics[width=7cm]{../figures/estimates_log_ca0_Gaussian.pdf}}
 \hfill
-\subfigure[Poisson]{\includegraphics[width=7cm]{../figures/Poisson.pdf}}\\
+\subfigure[Inverse-Gaussian]{\includegraphics[width=7cm]{../figures/estimates_log_ca0_invGaussian.pdf}}\\
 \hfill
-\subfigure[Bernoulli]{\includegraphics[width=7cm]{../figures/Bernoulli.pdf}}
+\subfigure[Linear regression]{\includegraphics[width=7cm]{../figures/estimates_log_ca0_RegressionNIG.pdf}}
 \hfill
-\subfigure[Inverse-Gaussian]{\includegraphics[width=7cm]{../figures/InverseGaussian.pdf}}
+\subfigure[Logistic regression]{\includegraphics[width=7cm]{../figures/estimates_log_ca0_RegressionLogistic.pdf}}
+
 \caption{\textbf{The normalising constant $c(a_0)$ for several models}.
 The plots show $\log c(a_0)$ for a host of models.
 Notice how for the inverse-Gaussian model  $\log c(a_0)$ (and $c(a_0)$) is~\textbf{increasing}.
+Dashed line shows the true $c(a_0)$, when it exists or can be computed.
 }
 \label{fig:cA0}
 \end{figure}
 
 \begin{figure}
 \hfill
-\subfigure[Regression]{\includegraphics[width=7cm]{../figures/a0_posterior_Regression.pdf}}
+\subfigure[Gaussian]{\includegraphics[width=7cm]{../figures/a0_posterior_Gaussian.pdf}}
 \hfill
-\subfigure[Poisson]{\includegraphics[width=7cm]{../figures/a0_posterior_Poisson.pdf}}\\
+\subfigure[Inverse-Gaussian]{\includegraphics[width=7cm]{../figures/a0_posterior_invgaussian.pdf}}\\
 \hfill
-\subfigure[Bernoulli]{\includegraphics[width=7cm]{../figures/a0_posterior_Bernoulli.pdf}}
+\subfigure[Linear regression]{\includegraphics[width=7cm]{../figures/a0_posterior_RegressionNIG.pdf}}
 \hfill
-\subfigure[Beta-binomial]{\includegraphics[width=7cm]{../figures/a0_posterior_BetaBinomial.pdf}}
+\subfigure[Logistic regression]{\includegraphics[width=7cm]{../figures/a0_posterior_RegressionLogistic.pdf}}
 \hfill
 \caption{\textbf{The posterior distribution of $a_0$ under normalised and unnormalised models}.
 The panels (and colours) correspond to the posterior distribution of the parameter $a_0$ when $c(a_0)$ is accounted for and when it is not included.
-The Beta-binomial model is introduced here so that the reader can compare the results to those for a Bernoulli likelihood.
+Horizontal dashed lines show the prior density of a $\text{Beta}(\nu = 1, \eta = 1)$.
 }
 \label{fig:normalisation}
 \end{figure}
-\end{document}          
+
+\begin{figure}
+\hfill
+\subfigure[Gaussian]{\includegraphics[width=7cm]{../figures/parameter_posterior_Gaussian.pdf}}
+\hfill
+\subfigure[Inverse-Gaussian]{\includegraphics[width=7cm]{../figures/parameter_posterior_invgaussian.pdf}}\\
+\hfill
+\subfigure[Linear regression]{\includegraphics[width=7cm]{../figures/parameter_posterior_Regression.pdf}}
+\hfill
+\subfigure[Logistic regression]{\includegraphics[width=7cm]{../figures/parameter_posterior_LogisticRegression.pdf}}
+\hfill
+\caption{\textbf{The posterior distribution of parameters of interest under normalised and unnormalised models}.
+The panels (and colours) correspond to the posterior distribution of the parameter $a_0$ when $c(a_0)$ is accounted for and when it is not included.
+Vertical lines mark the data-generating parameter values.
+}
+\label{fig:parameter_estimates}
+\end{figure}
+\end{document}
