@@ -49,12 +49,11 @@
 \end{itemize}
 
 \textbf{Definition}
-The data $D_0 \in \mathcal{X} \subseteq \mathbb{R}^p$  and the parameter $\theta \in \Theta \subseteq \mathbb{R}^q$ and $a_0 \geq 0$.
+The data $D_0 = \{ d_{01}, \ldots, d_{0N_0} \} \in \mathcal{X} \subseteq \mathbb{R}^p$ are assumed independent and identically distributed  and the parameter $\theta \in \Theta \subseteq \mathbb{R}^q$ and $a_0 \geq 0$.
 \begin{equation}
 \label{eq:power_prior}
- p(\theta \mid D_0, a_0) \propto L(D_0 \mid \theta)^{a_0}\pi(\theta)
+ p(\theta \mid D_0, a_0) \propto L(D_0 \mid \theta)^{a_0}\pi(\theta).
 \end{equation}
-
 
 \section{Results}
 
@@ -116,32 +115,42 @@ The first and second derivatives are
 c^\prime(a_0) &= \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta) d\theta, \\
 c^{\prime\prime}(a_0) &= \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log L(D_0\mid\theta)]^2 d\theta,
 \end{align}
-when the integrals exist. %% LM: to see why, recall that L(D|t) bounds log L(D|t) above.
+and the integrals always exist (see Proposition~\ref{prop:c_is_C2} in Appendix~\ref{sec:further_proofs}). %% LM: to see why, recall that L(D|t) bounds log L(D|t) above.
 From this we conclude that $c$ is (strictly) convex and $c^\prime$ is monotonic, because $c^{\prime\prime}$ is always positive.
 \end{proof}
 
 
 \subsubsection{Exponential family}
 
-[INTRO]
-
+Suppose $L(D_0 \mid \theta)$ is in the exponential family:
+\begin{equation}
+ L(D_0 \mid \theta) = \boldsymbol h(D_0) \exp \left( \eta(\theta)^T \left(\sum_{i=1}^{N_0} T(d_{0i}) \right) - N_0 A(\theta) \right),
+\end{equation}
+where $\boldsymbol h(D_0) = \prod_{i = 1}^{N_0} h(d_{0i})$.
+Thus we have
 \begin{align}
- c(a_0) &=  \int_{\boldsymbol\Theta} \left[ h(x)\exp\left( \boldsymbol\eta(\theta) \cdot \boldsymbol T(x) - A(\theta) \right) \right]^{a_0}\pi(\theta) d\theta, \\
+ c(a_0) &=  \int_{\boldsymbol\Theta} \left[ \boldsymbol h(D_0) \exp \left( \eta(\theta)^T \left(\sum_{i=1}^{N_0} T(d_{0i}) \right) - N_0 A(\theta) \right) \right]^{a_0}\pi(\theta) d\theta, \\
   \label{eq:expo_family_const}
- &= h(x)^{a_0}\int_{\boldsymbol\Theta} \exp \left( a_0 [\boldsymbol\eta(\theta) \cdot \boldsymbol T(x)] \right) \exp\left( - a_0 A(\theta) \right) \pi(\theta) d\theta.
+ &= \boldsymbol h(D_0)^{a_0}\int_{\boldsymbol\Theta} \exp \left( \eta(\theta)^T \left(a_0 \sum_{i=1}^{N_0} T(d_{0i}) \right) \right) \exp\left(- a_0N_0 A(\theta) \right) \pi(\theta) d\theta.
 \end{align}
 The derivative evaluates to 
 \begin{equation}
- c^\prime(a_0) = \log(h(D_0)) + \int_{\boldsymbol\Theta} f_{a_0}(D_0; \theta) \left[  \boldsymbol\eta(\theta) \cdot \boldsymbol T(D_0) \right] d\theta -  \int_{\boldsymbol\Theta} f_{a_0}(D_0; \theta)  A(\theta) d\theta,
+\label{eq:expo_family_deriv_general}
+ c^\prime(a_0) = \log(\boldsymbol h(D_0)) + \int_{\boldsymbol\Theta} \eta(\theta)^T \left(a_0 \sum_{i=1}^{N_0} T(d_{0i}) \right) f_{a_0}(D_0; \theta) d\theta -  a_0N_0\int_{\boldsymbol\Theta} f_{a_0}(D_0; \theta)  A(\theta) d\theta,
 \end{equation}
-where $f_{a_0}(D_0; \theta) := \left[ h(D_0)\exp\left( \boldsymbol\eta(\theta) \cdot \boldsymbol T(D_0) - A(\theta) \right) \right]^{a_0}\pi(\theta)$.
+where $f_{a_0}(D_0; \theta) := L(D_0 \mid \theta)^{a_0}\pi(\theta)$.
 
-Now suppose $\pi(\theta)$ is conjugate to $L(D_0 \mid \theta)$~\citep{Diaconis1979}:
+If we choose $\pi(\theta)$ to be conjugate to $L(D_0 \mid \theta)$~\citep{Diaconis1979}, i.e.
 \begin{equation}
  \label{eq:conj_exp_family}
- \pi(\theta \mid \eta) = 
+ \pi(\theta \mid \tau, n_0) = H(\tau, n_0) \exp\{ \tau^T\eta(\theta) - n_0A(\theta) \},
 \end{equation}
-
+we have 
+\begin{align}
+ \label{eq:expo_family_const_conj}
+%  c(a_0) &= \boldsymbol h(D_0)^{a_0} H(\tau, n_0) \int_{\boldsymbol\Theta} \exp \left( \eta(\theta)^T \left(a_0 \sum_{i=1}^{N_0} T(d_{0i}) \right) -a_0N_0 A(\theta) \right) \exp\{  \eta(\theta)  \tau^T - n_0A(\theta) \} d\theta,\\
+ c(a_0) &= \boldsymbol h(D_0)^{a_0} H(\tau, n_0) \int_{\boldsymbol\Theta}  \exp \left[ \eta(\theta)^T \left( \tau + a_0\sum_{i=1}^{N_0} T(d_{0i}) \right) -(n_0  + a_0N_0) A(\theta) \right] d\theta
+\end{align}
 
 \subsection{Examples}
 \subsubsection{Gaussian}
@@ -306,20 +315,20 @@ This approach allows one to evaluate several approximating functions without hav
 
 A key insight is that $c(a_0)$ is convex, so we need only to make sure our grid covers the region where its derivative changes signs when designing both $\boldsymbol a^{\text{est}}$ and $\boldsymbol a^{\text{pred}}$.
 
-A caveat of this grid approach is that the maximum end point needs to chosen in advance, effectively bounding the space of $a_0$ considered. 
+A caveat of this grid approach is that the maximum end point needs to be chosen in advance, effectively bounding the space of $a_0$ considered. 
 For many applications, interest usually lies with $a_0 \in [0, 1]$, and in applications where one is interested in $a_0 > 1$, one usually has a good idea of the range of reasonable of values, since this information is also useful in specifying the prior $\pi(a_0)$.
-In fact, prior information can be used to set the maximum: let $p$ be a fixed probability and then set the maximum grid value $M$ such that
+In fact, prior information can be used to set the maximum grid value: let $p$ be a fixed probability and then set the maximum grid value $M$ such that
 \[ \int_0^M \pi(a) da = p. \]
 One can pick $p = 0.9999$, for instance so as to have a high chance of not sampling any values outside the grid.
 
 \textbf{Effect of discretising the approximating function}.
-In order to evaluate the effect of a discretisation of $g_{\boldsymbol\xi}$ on inferences, we evaluated the effect of varying the prediction grid size $K$.
+In order to evaluate the effect of discretisation of $g_{\boldsymbol\xi}$ on inferences, we evaluated the effect of varying the prediction grid size $K$.
 For three examples where we know the truth, namely the Gaussian and Bernoulli distributions and a linear regression with a normal inverse-Gamma prior, we compared estimates of parameters -- including $a_0$ -- and marginal likelihoods obtained by using the true $c(a_0)$ and the discretised $g_{\boldsymbol\xi}$ with $K =  50, 100, 1000,~\text{and}\: 10, 000$.
 For prediction, we use a simple, linear grid, with end points $a^{\text{pred}}_1 = 0$ and $a^{\text{pred}}_K = 10$.
 For all experiments we fixed the estimation grid size at $J = 10$ with the same endpoints as the prediction grid $a^{\text{est}}_1 = 0$, $a^{\text{est}}_K = 10$, but placing most ($J-3 = 7$) points on the $[0, 1]$ interval.
 
 \textbf{Marginal likelihood estimation}.
-We employed  bridge sampling to compute marginal likelihoods, i.e., $c(a_0)$, implemented in the R package~\textbf{bridgesampling}~\citep{Gronau2017}.
+We employed  bridge sampling to compute marginal likelihoods implemented in the R package~\textbf{bridgesampling}~\citep{Gronau2017}.
 We used HMC as before, with four independent chains of $2000$ iterations each, removing half of each chain as burn-in/warm-up, resulting in $4000$ samples being kept.
 
 
@@ -376,6 +385,27 @@ LMC is supported by a postodoctoral fellowship from CAPES.
 \bibliography{../biblio/power_prior}
 
 \appendix
+
+\section{Additional results}
+\label{sec:further_proofs}
+
+\begin{proposition}
+\label{prop:c_is_C2}
+The first and second derivatives of $c(a_0)$ always exist, i.e., $c \in \mathcal{C}^2$. 
+\end{proposition}
+\begin{proof}
+To see that
+\[c^\prime(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta) d\theta < \infty, \]
+just apply Jensen's inequality to get $E[\log(X)] \leq \log\left(E[X]\right)$ and $ X = L( D_0 \mid \theta)$ and apply Theorem~\ref{thm:integrability}.
+Now, to see that 
+\[ c^{\prime\prime}(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log L(D_0\mid\theta)]^2 d\theta < \infty, \]
+we will use the upper bound on the $\log$ function:
+\[ \log(x) \leq x - 1.\]
+Multiplying both sides by $\log(x)$ we get
+\[ \log(x)\log(x) \leq x\log(x) - \log(x),\]
+and hence $E[\log^2(X)] \leq E[X\log(X)] - E[\log(X)]$ by the linearity of expectation.
+Again, making $X = L(D_0 \mid \theta)$ and applying Theorem~\ref{thm:integrability} gives the desired conclusion.
+\end{proof}
 
 \section{The derivative of $c(a_0)$ for the normal case}
 \label{sec:ca0_norm_deriv}
@@ -444,7 +474,7 @@ which is always true, by direct application of Titu's lemma.
 
 \caption{\textbf{The normalising constant $c(a_0)$ for several models}.
 The plots show $\log c(a_0)$ for a host of models.
-Notice how for the inverse-Gaussian model  $\log c(a_0)$ (and $c(a_0)$) is~\textbf{increasing}.
+Notice how for the inverse-Gaussian model  $\log c(a_0)$ is~\textbf{increasing} in $a_0$.
 Dashed line shows the true $c(a_0)$, when it exists or can be computed.
 }
 \label{fig:cA0}
