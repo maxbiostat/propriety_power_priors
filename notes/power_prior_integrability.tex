@@ -88,7 +88,7 @@ because $0 \leq a_0 - p_n \leq 1$ and $L(D_0\mid\theta)^{p_n}\pi(\theta)$ is pro
 \end{remark}
 \begin{proof}
  Recall that the power prior on multiple historical data sets is of the form~[Eq. 2.9]\citep{Ibrahim2015}:
- \[ \pi(\theta \mid \boldsymbol D, a_0) \propto \prod_{k=1}^K L(\theta \mid D_k)^{a_{0k}} \pi_0(\theta). \]
+ \[ \pi(\theta \mid \boldsymbol D, \boldsymbol a_0) \propto \prod_{k=1}^K L(\theta \mid D_k)^{a_{0k}} \pi_0(\theta). \]
 Assume, without loss of generality, that $L(\theta \mid  D_k)^{a_{0k}} > 1$ for all $\theta$ and let $m := \max(\boldsymbol a_0)$ with $\boldsymbol a_0 := \{ a_{01}, a_{02}, \ldots, a_{0K}\}$.
 Then $\pi(\theta \mid \boldsymbol D, a_0)$ is bounded above by 
 \[  g(\theta) :=  \prod_{k=1}^K L(\theta \mid D_k)^{m} \pi_0(\theta) =  \left[ \prod_{k=1}^K L(\theta \mid D_k) \right]^m  \pi_0(\theta) = L(\theta \mid \boldsymbol D)^m \pi_0(\theta), \]
@@ -118,6 +118,14 @@ c^{\prime\prime}(a_0) &= \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log 
 and the integrals always exist (see Proposition~\ref{prop:c_is_C2} in Appendix~\ref{sec:further_proofs}). %% LM: to see why, recall that L(D|t) bounds log L(D|t) above.
 From this we conclude that $c$ is (strictly) convex and $c^\prime$ is monotonic, because $c^{\prime\prime}$ is always positive.
 \end{proof}
+For the goals of this paper, it would be useful to know more about the shape of $c(a_0)$, more specifically if and when its derivatives change signs.
+Let us first study an upper bound for $c^\prime(a_0)$.
+By a straight-forward application of the Cauchy-Schwarz inequality, we also know that $c^{\prime\prime}(a_0) \geq c^\prime(a_0)$.
+Now, to derive a lower bound on $c^\prime(a_0)$, consider the inequality $ 1- 1/x \leq \log(x)$, $x >0$, which suggests
+\begin{equation*}
+ \label{eq:c_a0_deriv_lb}
+ c^\prime(a_0) \geq c(a_0) - \int_{\Theta} L(D_0\mid\theta)^{a_0-1} \pi(\theta) d\theta.
+\end{equation*}
 
 
 \subsubsection{Exponential family}
@@ -344,7 +352,6 @@ We used HMC as before, with four independent chains of $2000$ iterations each, r
 \section*{TODO:}
 \begin{itemize}
  \item check proofs;
- \item show that the integrals in (\ref{eq:derivative_ca0}) \textbf{always} exist.
 \end{itemize}
 
 % \section{Roadmap}
@@ -396,15 +403,23 @@ The first and second derivatives of $c(a_0)$ always exist, i.e., $c \in \mathcal
 \begin{proof}
 To see that
 \[c^\prime(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta) d\theta < \infty, \]
-just apply Jensen's inequality to get $E[\log(X)] \leq \log\left(E[X]\right)$ and $ X = L( D_0 \mid \theta)$ and apply Theorem~\ref{thm:integrability}.
+make $ X = L( D_0 \mid \theta)$ and  apply Jensen's inequality to get $E[\log(X)] \leq \log\left(E[X]\right)$, then apply Theorem~\ref{thm:integrability}.
 Now, to see that 
 \[ c^{\prime\prime}(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log L(D_0\mid\theta)]^2 d\theta < \infty, \]
-we will use the upper bound on the $\log$ function:
-\[ \log(x) \leq x - 1.\]
-Multiplying both sides by $\log(x)$ we get
-\[ \log(x)\log(x) \leq x\log(x) - \log(x),\]
-and hence $E[\log^2(X)] \leq E[X\log(X)] - E[\log(X)]$ by the linearity of expectation.
-Again, making $X = L(D_0 \mid \theta)$ and applying Theorem~\ref{thm:integrability} gives the desired conclusion.
+we will first assume that $L(D_0 \mid \theta) < 1 \: \forall\: \theta \in \Theta$, because if $L(D_0 \mid \theta) > 1$, the integral is bounded above by $c(a_0 + 2)$ and hence is clearly finite.
+Now define $\phi(x) := \log(x)\log(x)$ and notice this is a convex function $(0, 1) \to \mathbb{R}$, because it is a scalar composition of a non-increasing convex function and a concave function.
+We also have that $\phi^\prime(x) = 2\log(x)/x$.
+Now we will use the following bound~\citep[Theorem 2.1 and Remark 2.1 (ii)]{Birge1989}:
+\begin{equation}
+ \label{eq:convex_func_expectation_bound}
+ E[\phi(X)] \leq \phi\left(\frac{E\left[X\phi^\prime(X)\right]}{E[\phi^\prime(X)]}\right).
+\end{equation}
+If we again make $X = L(D_0 \mid \theta)$ and take expectations with respect to the unormalised density $f_{a_0}(D_0; \theta)$, we have
+\begin{align*}
+ c^{\prime\prime}(a_0) &= E[\phi(X)] \leq \phi\left(\frac{E\left[\log(X)\right]}{E[\log(X)/X]}\right).
+%  & \leq \phi\left(\frac{c^\prime(a_0)}{E[\log(X)/X]}\right)
+\end{align*}
+Since $E\left[\log(X)\right]$ is simply $c^\prime(a_0)$ and $E[\log(X)/X]$ is bounded above by $c(a_0)$, we conclude $c^{\prime\prime}(a_0) < \infty$, completing the proof.
 \end{proof}
 
 \section{The derivative of $c(a_0)$ for the normal case}
