@@ -402,18 +402,15 @@ The first and second derivatives of $c(a_0)$ always exist, i.e., $c \in \mathcal
 \end{proposition}
 \begin{proof}
 Here we will assume that $L(D_0 \mid \theta) > 0\: \forall \theta \in \Theta$.
+Let $f(\theta) = L(D_0 \mid \theta)^{a_0}\pi(\theta)$.
 To see that
 \[c^\prime(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta) d\theta < \infty, \]
-make $ X = L( D_0 \mid \theta)$ and  apply Jensen's inequality to get $E[\log(X)] \leq \log\left(E[X]\right)$, then apply Theorem~\ref{thm:integrability}.
+make $ X = L( D_0 \mid \theta)$ and  apply Jensen's inequality to get $E_f[\log(X)] \leq \log\left(E_f[X]\right)$, then apply Theorem~\ref{thm:integrability}.
 Now, to see that 
 \[ c^{\prime\prime}(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log L(D_0\mid\theta)]^2 d\theta < \infty, \]
-we will first assume that $L(D_0 \mid \theta) < 1 \: \forall\: \theta \in \Theta$, because if $L(D_0 \mid \theta) > 1$, the integral is bounded above by $c(a_0 + 2 )$ and hence is clearly finite.
-For $ 0 < x < 1$, we have
-\[ (x-1)\log(x) \leq \log(x)\log(x) \leq \log(x) - \log(x)/x. \]
-If we again make $X = L(D_0 \mid \theta)$ and take expectations with respect to the unormalised density $f_{a_0}(D_0; \theta)$, we have that $E[\log^2(X)] \leq E[\log(X)] - E[\log(X)/X]$.
-Since $E\left[\log(X)\right]$ is simply $c^\prime(a_0)$ and $E[\log(X)/X]$ is bounded above by $c(a_0 + 1)$, we conclude $c^{\prime\prime}(a_0) < \infty$, completing the proof.
+write $g(\theta) =  L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta)$ and notice that $E_g[\log(X)] \leq \log(E_g[X]) < \infty$ by applying Jensen's inequality and Theorem~\ref{thm:integrability} once again.
+% We conclude $c^{\prime\prime}(a_0) < \infty$, completing the proof.
 \end{proof}
-
 \section{The derivative of $c(a_0)$ for the normal case}
 \label{sec:ca0_norm_deriv}
 Define
