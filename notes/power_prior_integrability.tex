@@ -406,20 +406,57 @@ Let $f(\theta) = L(D_0 \mid \theta)^{a_0}\pi(\theta)$.
 To see that
 \[c^\prime(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta) d\theta < \infty, \]
 make $ X = L( D_0 \mid \theta)$ and  apply Jensen's inequality to get $E_f[\log(X)] \leq \log\left(E_f[X]\right)$, then apply Theorem~\ref{thm:integrability}.
-Now, to see that 
+Now, to show that 
 \[ c^{\prime\prime}(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log L(D_0\mid\theta)]^2 d\theta < \infty, \]
-write $g(\theta) =  L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta)$ and notice that $E_g[\log(X)] \leq \log(E_g[X]) < \infty$ by applying Jensen's inequality and Theorem~\ref{thm:integrability} once again.
-% We conclude $c^{\prime\prime}(a_0) < \infty$, completing the proof.
+we will first assume that $L(D_0 \mid \theta) < 1 \: \forall\: \theta \in \Theta$, because if $L(D_0 \mid \theta) > 1$, the integral is bounded above by $c(a_0 + 2)$ and hence is clearly finite.
+For $0 < x \leq 1$, the usual bounds on $\log(x)$ can be manipulated to get 
+% $$ (x-1)\log(x) \leq \log(x)\log(x) \leq \left(1 - \frac{1}{x}\right)\log(x) \leq - \frac{\log(x)}{x} $$
+$$ (x-1)\log(x) \leq \log(x)\log(x) \leq - \frac{\log(x)}{x} $$
+% From this we conclude that 
+% \[ E_f[X\log(X)] - E[\log(X)] \leq E_f[\log(X)\log(X)] \leq - E_f[\log(X)/X], \]
+Hence all that remains is to show that $ - \infty < E_f[\log(X)/X]$.
+Again, we can manipulate the bounds on $\log(x)$ to get $1/x - 1/x^2 \leq \log(x)/x$, so we need to show that $E[1/X^2] < \infty$.
+This holds for $a_0 \geq 2$, but we shall try to show the result in general.
+% \[ E[1/X^2] = \int_{\Theta} L(D_0\mid\theta)^{a_0-2}\pi(\theta)  d\theta\]
+% For $a_0 = 0$,
+% \[ E[1/X^2] = \int_{\Theta} \frac{\pi(\theta)}{L(D_0\mid\theta)^2}  d\theta\]
+Define the random variable $Y = \left[L(D_0 \mid \theta)\right]^2$, let $G$ be the push-forward measure on $Y$ induced by $\Pi_\theta$, and let $g(y)$ be its density.
+Then we can write 
+\[ f_Y(y) = L(D_0\mid\theta)^{a_0}\pi(\theta) = y^{a_0/2} g(y). \]
+Notice that asking that $E[1/X^2] < \infty$ is equivalent to asking that $E[Y^{-1}] < \infty$.
+Corollary 2.1 of ~\cite{Piegorsch1985} states that if $Y$ is a positive random variable and $f_Y^\prime(0)$ exists and is finite, then $E[Y^{-1}] < \infty$.
+Since 
+\[ f_Y^\prime(y) = y^{(a_0-2)/2} \left(\frac{a_0}{2}g(y) + yg^\prime(y) \right),\]
+we have $f_Y^\prime(0) = 0$ and hence 
+% Theorem says that if $Y$ is a positive random variable and for some $\alpha > 0$
+% \[ \lim_{y \to 0} \frac{f_Y(y)}{y^\alpha} < \infty,\]
+% then $E[Y^{-1}] < \infty$.
+% If we set $\alpha = \frac{1}{2} a_0$, we then need
+% \[ \lim_{y \to 0} g(y) < \infty.\]
+% To establish a lower bound on $E_f[\log(X)/X]$, we will first need the following bound~\citep[Theorem 2.1 and Remark 2.1]{Birge1989}:
+% \begin{equation}
+%  \label{eq:concave_func_expectation_bound}
+% \phi\left(\frac{E\left[X\phi^\prime(X)\right]}{E[\phi^\prime(X)]}\right) \leq E[\phi(X)].
+% \end{equation}
+% where $\phi$ is an increasing concave function $\phi : (a, b) \to \mathbb{R}$, with $E[\phi^\prime(X)] > 0$.
+% Let $\phi(x) = \log(x)/x$, and thus $\phi^\prime(x) = -(\log(x)-1)/x^2 > 0$ and $\phi^{\prime\prime}(x) = (2\log(x)-3)/x^3 < 0 $.
+% \[ E_f[\log(X)/X] = \int_{\Theta} L(D_0\mid\theta)^{a_0-1} \pi(\theta) \log L(D_0\mid\theta) d\theta \]
+% To get the upper bound, write
+% \begin{align*}
+%  E_f[\log(X)/X] &= \int_{\Theta} L(D_0\mid\theta)^{a_0-1} \pi(\theta) \log L(D_0\mid\theta) d\theta, \\
+%  & \leq \int_{\Theta} L(D_0\mid\theta)^{a_0-1} \pi(\theta)  L(D_0\mid\theta) d\theta = c(a_0) < \infty .
+% \end{align*}
+we conclude $E[1/X^2]$ is finite, completing the proof.
 \end{proof}
 \section{The derivative of $c(a_0)$ for the normal case}
 \label{sec:ca0_norm_deriv}
 Define
 \begin{align*}
- c(a_0) =& g(a_0)h(a_0)w(a_0)z(a_0), \\
- g(a_0) :=&  \frac{\Gamma\left( \alpha_0 + \frac{N_0}{2}a_0 \right)}{\Gamma(\alpha_0)}, \\
- h(a_0) :=& \frac{\beta_0^{\alpha_0}}{ \left(  \beta_0 + \Delta a_0\right)^{\alpha_0 + \frac{N_0}{2}a_0}}, \\
- w(a_0) :=& \left(\frac{\kappa_0}{\kappa_0 + N_0 a_0} \right)^2 , \\
- z(a_0) :=& (2\pi)^{-N_0 a_0/2}, 
+ c(a_0) &= g(a_0)h(a_0)w(a_0)z(a_0), \\
+ g(a_0) &:=  \frac{\Gamma\left( \alpha_0 + \frac{N_0}{2}a_0 \right)}{\Gamma(\alpha_0)}, \\
+ h(a_0) &:= \frac{\beta_0^{\alpha_0}}{ \left(  \beta_0 + \Delta a_0\right)^{\alpha_0 + \frac{N_0}{2}a_0}}, \\
+ w(a_0) &:= \left(\frac{\kappa_0}{\kappa_0 + N_0 a_0} \right)^2 , \\
+ z(a_0) &:= (2\pi)^{-N_0 a_0/2}, 
 \end{align*}
 with $\Delta =  \frac{1}{2}\left( \sum_{i=1}^{N_0}(y_{0i}-\bar{y})^2 + \frac{\kappa_0}{\kappa_n} N_0 (\bar{y}-\mu_0)^2 \right)$.
 Thus,
