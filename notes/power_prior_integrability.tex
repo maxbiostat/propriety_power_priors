@@ -115,7 +115,7 @@ The first and second derivatives are
 c^\prime(a_0) &= \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta) d\theta, \\
 c^{\prime\prime}(a_0) &= \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log L(D_0\mid\theta)]^2 d\theta,
 \end{align}
-and the integrals always exist (see Proposition~\ref{prop:c_is_C2} in Appendix~\ref{sec:further_proofs}). %% LM: to see why, recall that L(D|t) bounds log L(D|t) above.
+when the integrals exist (see Proposition~\ref{prop:c_is_C2} in Appendix~\ref{sec:further_proofs}). %% LM: to see why, recall that L(D|t) bounds log L(D|t) above.
 From this we conclude that $c$ is (strictly) convex and $c^\prime$ is monotonic, because $c^{\prime\prime}$ is always positive.
 \end{proof}
 For the goals of this paper, it would be useful to know more about the shape of $c(a_0)$, more specifically if and when its derivatives change signs.
@@ -127,8 +127,12 @@ Now, to derive a lower bound on $c^\prime(a_0)$, consider the inequality $ 1- 1/
  c^\prime(a_0) \geq c(a_0) - \int_{\Theta} L(D_0\mid\theta)^{a_0-1} \pi(\theta) d\theta.
 \end{equation*}
 
+For computational reasons, one is usually interested in $l(a_0) := \log(c(a_0)) $ instead of $c(a_0)$ and hence it is also useful to study the derivative of the log-normalising constant, $l^\prime(a_0) = c^\prime(a_0)/c(a_0)$.
+A key observation is that $l^\prime(a_0)$ changes signs at the same point as $c^\prime(a_0)$, a feature we can exploit when designing algorithms for approximating $l(a_0)$ (see Section~\ref{sec:efficient_computation_ca0}). 
+
 
 \subsubsection{Exponential family}
+\label{sec:expo_family}
 
 Suppose $L(D_0 \mid \theta)$ is in the exponential family:
 \begin{equation}
@@ -161,7 +165,10 @@ we have
 \end{align}
 
 \subsection{Examples}
+\label{sec:examples}
+
 \subsubsection{Gaussian}
+\label{sec:gaussian_ex}
 
 Suppose one has $N_0$ historical observations $y_{i0} \in \mathbb{R}, i = 1, \ldots, N_0$.
 Here we will choose a Normal-gamma conjugate model:
@@ -185,6 +192,7 @@ The posterior distribution is again a normal-gamma distribution and the normalis
 with $\bar{y} = \sum_{i=1}^{N_0} y_{0i}/N_0$.
 
 \subsubsection{Linear regression with a normal inverse-Gamma prior}
+\label{sec:linreg_ex}
 
 Suppose $\boldsymbol X_0$ is a $N_0 \times P$ full-rank matrix of predictors and $\boldsymbol y_0 = \{y_{01}, \ldots, y_{0N_0} \}$ is a vector of observations.
 For illustrative purposes, we will employ a mean and variance parametrisation, which naturally leads to a normal inverse-gamma conjugate prior.
@@ -212,6 +220,7 @@ c(a_0) &= \sqrt{\frac{|\boldsymbol\Lambda_n|}{|\boldsymbol\Lambda_0^{-1}|}} \fra
 where $\boldsymbol X_{\star} = \sqrt{a_0} \boldsymbol X_0$ and $\boldsymbol y_{\star} = \sqrt{a_0} \boldsymbol y_0$, and $|A|$ denotes the determinant of $A$.
 
 \subsubsection{Bernoulli}
+\label{sec:bernoulli_ex}
 
 The historical data consist of $N_0$ Bernoulli trials $x_{0i} \in \{0,1\}$.
 Suppose there were $y_0 = \sum_{i=1}^{N_0}x_{0i}$ successes.
@@ -236,6 +245,7 @@ where $\mathcal{B}(w, z) = \frac{\Gamma(w)\Gamma(z)}{\Gamma(w + z)}$.
 % The binomial variant is quite similar to the Bernoulli model, with the model
 
 \subsubsection{Gamma}
+\label{sec:gamma_ex}
 
 The historical data consist of $N_0$ observations $\boldsymbol y_0 =\{y_{01}, \ldots , y_{0N_0}\}$, $y_{0i} > 0$.
 And the model is
@@ -259,6 +269,7 @@ Whilst the expression in~(\ref{eq:cA0_gamma}) cannot be obtained in closed-form,
 
 
 \subsubsection{Inverse Gaussian}
+\label{sec:invgaussian_ex}
 
 The historical data consist of $N_0$ observations $\boldsymbol y_0 =\{y_{01}, \ldots , y_{0N_0}\}$, $y_{0i} > 0$.
 The model is
@@ -285,8 +296,8 @@ Similar to the Gamma case, one can marginalise over $\lambda$ by noticing its fu
 \end{align}
 Again, while the integral in~(\ref{eq:cA0_invGaussian}) is not known in closed-form, it can be approximated~\textit{via} quadrature.
 
-
 \subsubsection{Poisson}
+\label{sec:poisson_ex}
 
 Suppose the historical data consists of $N_0$ observations $y_{0i} \in \{0, 1, \ldots \}$.
 The model is 
@@ -306,6 +317,7 @@ where $\boldsymbol s := \sum_{i=0}^{N_0} y_{0i}$ and $\boldsymbol p^\prime := \p
 
 
 \subsection{Efficiently computing $c(a_0)$}
+\label{sec:efficient_computation_ca0}
 
 For many models, $c(a_0)$ is not known in closed form, and hence must be approximated if we wish to compute it.
 An example where this would be important is when we need to normalise the power prior for use within a Markov chain Monte Carlo (MCMC) procedure.
@@ -321,13 +333,18 @@ In order to simplify implementation, in our applications we found it useful to c
 We can then use this dictionary of values to obtain an approximate value of $c(a_0)$ by simple interpolation.
 This approach allows one to evaluate several approximating functions without having to implement each one separately.
 
-A key insight is that $c(a_0)$ is convex, so we need only to make sure our grid covers the region where its derivative changes signs when designing both $\boldsymbol a^{\text{est}}$ and $\boldsymbol a^{\text{pred}}$.
-
 A caveat of this grid approach is that the maximum end point needs to be chosen in advance, effectively bounding the space of $a_0$ considered. 
 For many applications, interest usually lies with $a_0 \in [0, 1]$, and in applications where one is interested in $a_0 > 1$, one usually has a good idea of the range of reasonable of values, since this information is also useful in specifying the prior $\pi(a_0)$.
 In fact, prior information can be used to set the maximum grid value: let $p$ be a fixed probability and then set the maximum grid value $M$ such that
 \[ \int_0^M \pi(a) da = p. \]
 One can pick $p = 0.9999$, for instance so as to have a high chance of not sampling any values outside the grid.
+
+\textbf{Finding out whether $l(a_0)$ changes signs}.
+Since $l(a_0)$ is convex, we need to make sure our grid covers the region where its derivative changes signs (if it does) when designing both $\boldsymbol a^{\text{est}}$ and $\boldsymbol a^{\text{pred}}$.
+As discussed above, its derivative changes signs at the same point as $c^\prime(a_0)$ does, and we shall exploit this to design our grids.
+Equation~(\ref{eq:derivative_ca0}) suggests that one can get an estimate of $c^\prime(a_0)$ directly from MCMC, since this is just the expected value of the log-likelihood under the power prior.
+We then propose doing a bisection-type search: start with $a_0 = m$ and $a_0 = M$ and check whether $\text{sgn}(c^\prime(m)) = \text{sgn}(c^\prime(M))$.
+[FINISH THIS ALGORITHM]
 
 \textbf{Effect of discretising the approximating function}.
 In order to evaluate the effect of discretisation of $g_{\boldsymbol\xi}$ on inferences, we evaluated the effect of varying the prediction grid size $K$.
@@ -367,20 +384,20 @@ We used HMC as before, with four independent chains of $2000$ iterations each, r
 % \end{itemize}
 % As I understand it currently, the paper would have review-y feel to it: review what has been done for regression models and then add some of new stuff we've figured out.
 
-\section{Questions}
+% \section{Questions}
 
-\begin{enumerate}
+% \begin{enumerate}
 %  \item Is it not the case that when employing an unormalised power prior, we can't compute marginal likelihoods\footnote{What I mean to say here is that marginal likelihoods don't make any sense unless the prior is properly normalised.}? Does that matter in practice? LM: Yeah, you need a properly normalised prior.
 %  \item Should we be pursuing ways of computing $c(a_0) := \int_{\boldsymbol \Theta} p(t \mid D, a_0)dt$ for general models? LM: YES!
-\item \textbf{The shape of $c(a_0)$}: From both a theoretical and practical point of view, it'd be nice to know when $c(a_0)$ is non-monotonic like for the Gaussian case [and a very special choice of hyperparameters] and when it's just a straight line, as for most models I've tested. 
-Appendix~\ref{sec:ca0_norm_deriv} contains some rudimentary analysis for the Gaussian case...
-\item \textbf{Exponential family}: it could be potentially fruitful to explore the results in Eq.~\ref{eq:expo_family_const} a bit more and maybe help answer the question above; under which conditions will a likelihood in the exponential family lead to a monotonic (and hence linear since we know it's definitely convex) $c(a_0)$?
-\item \textbf{Sensitivity to $a_0$}: (i) is this important? (ii)  how to define sensitivity? one thing to look at is variance reduction as $a_0 \to \infty$...
-At any rate, we know empirically that for some models (e.g. logistic regression) including the normalising constant is of utmost importance, whereas for others (e.g. Bernoulli), it doesn't seem to matter much.
-\textbf{Important:} When I say ``matters'' (or not), I'm talking about the effect on estimates of actual parameters, like regression coefficients or success probability.
-Including $c(a_0)$ always makes a HUGE difference for ``estimates'' of $a_0$, obviously.
-\item \textbf{Situations with $a_0 > 1$} Should we pursue this? It seems to me we should at least consider it, since we show that the power prior is proper for $a_0 > 1$ also.
-\end{enumerate}
+% \item \textbf{The shape of $c(a_0)$}: From both a theoretical and practical point of view, it'd be nice to know when $c(a_0)$ is non-monotonic like for the Gaussian case [and a very special choice of hyperparameters] and when it's just a straight line, as for most models I've tested. 
+% Appendix~\ref{sec:ca0_norm_deriv} contains some rudimentary analysis for the Gaussian case...
+% \item \textbf{Exponential family}: it could be potentially fruitful to explore the results in Eq.~\ref{eq:expo_family_const} a bit more and maybe help answer the question above; under which conditions will a likelihood in the exponential family lead to a monotonic (and hence linear since we know it's definitely convex) $c(a_0)$?
+% \item \textbf{Sensitivity to $a_0$}: (i) is this important? (ii)  how to define sensitivity? one thing to look at is variance reduction as $a_0 \to \infty$...
+% At any rate, we know empirically that for some models (e.g. logistic regression) including the normalising constant is of utmost importance, whereas for others (e.g. Bernoulli), it doesn't seem to matter much.
+% \textbf{Important:} When I say ``matters'' (or not), I'm talking about the effect on estimates of actual parameters, like regression coefficients or success probability.
+% Including $c(a_0)$ always makes a HUGE difference for ``estimates'' of $a_0$, obviously.
+% \item \textbf{Situations with $a_0 > 1$} Should we pursue this? It seems to me we should at least consider it, since we show that the power prior is proper for $a_0 > 1$ also.
+% \end{enumerate}
 
 
 \section*{Acknowledgements}
@@ -398,7 +415,7 @@ LMC is supported by a postodoctoral fellowship from CAPES.
 
 \begin{proposition}
 \label{prop:c_is_C2}
-The first and second derivatives of $c(a_0)$ always exist, i.e., $c \in \mathcal{C}^2$. 
+The first and second derivatives of $c(a_0)$ always exist for $a_0 \geq 1$ and $a_0 \geq 2$, respectively. 
 \end{proposition}
 \begin{proof}
 Here we will assume that $L(D_0 \mid \theta) > 0\: \forall \theta \in \Theta$.
@@ -406,48 +423,32 @@ Let $f(\theta) = L(D_0 \mid \theta)^{a_0}\pi(\theta)$.
 To see that
 \[c^\prime(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) \log L(D_0\mid\theta) d\theta < \infty, \]
 make $ X = L( D_0 \mid \theta)$ and  apply Jensen's inequality to get $E_f[\log(X)] \leq \log\left(E_f[X]\right)$, then apply Theorem~\ref{thm:integrability}.
+The lower bound can be established by noticing that $(1-1/x) \leq \log(x)$ (see below).
 Now, to show that 
 \[ c^{\prime\prime}(a_0) = \int_{\Theta} L(D_0\mid\theta)^{a_0} \pi(\theta) [\log L(D_0\mid\theta)]^2 d\theta < \infty, \]
-we will first assume that $L(D_0 \mid \theta) < 1 \: \forall\: \theta \in \Theta$, because if $L(D_0 \mid \theta) > 1$, the integral is bounded above by $c(a_0 + 2)$ and hence is clearly finite.
+we will first assume that $L(D_0 \mid \theta) < 1 \: \forall\: \theta \in \Theta$, because if $L(D_0 \mid \theta) > 1$, the integral is bounded above by $c(a_0 + 2)$ and hence is finite following Theorem~\ref{thm:integrability}.
 For $0 < x \leq 1$, the usual bounds on $\log(x)$ can be manipulated to get 
 % $$ (x-1)\log(x) \leq \log(x)\log(x) \leq \left(1 - \frac{1}{x}\right)\log(x) \leq - \frac{\log(x)}{x} $$
 $$ (x-1)\log(x) \leq \log(x)\log(x) \leq - \frac{\log(x)}{x} $$
-% From this we conclude that 
-% \[ E_f[X\log(X)] - E[\log(X)] \leq E_f[\log(X)\log(X)] \leq - E_f[\log(X)/X], \]
 Hence all that remains is to show that $ - \infty < E_f[\log(X)/X]$.
-Again, we can manipulate the bounds on $\log(x)$ to get $1/x - 1/x^2 \leq \log(x)/x$, so we need to show that $E[1/X^2] < \infty$.
-This holds for $a_0 \geq 2$, but we shall try to show the result in general.
-% \[ E[1/X^2] = \int_{\Theta} L(D_0\mid\theta)^{a_0-2}\pi(\theta)  d\theta\]
-% For $a_0 = 0$,
-% \[ E[1/X^2] = \int_{\Theta} \frac{\pi(\theta)}{L(D_0\mid\theta)^2}  d\theta\]
-Define the random variable $Y = \left[L(D_0 \mid \theta)\right]^2$, let $G$ be the push-forward measure on $Y$ induced by $\Pi_\theta$, and let $g(y)$ be its density.
-Then we can write 
-\[ f_Y(y) = L(D_0\mid\theta)^{a_0}\pi(\theta) = y^{a_0/2} g(y). \]
-Notice that asking that $E[1/X^2] < \infty$ is equivalent to asking that $E[Y^{-1}] < \infty$.
-Corollary 2.1 of ~\cite{Piegorsch1985} states that if $Y$ is a positive random variable and $f_Y^\prime(0)$ exists and is finite, then $E[Y^{-1}] < \infty$.
-Since 
-\[ f_Y^\prime(y) = y^{(a_0-2)/2} \left(\frac{a_0}{2}g(y) + yg^\prime(y) \right),\]
-we have $f_Y^\prime(0) = 0$ and hence 
-% Theorem says that if $Y$ is a positive random variable and for some $\alpha > 0$
-% \[ \lim_{y \to 0} \frac{f_Y(y)}{y^\alpha} < \infty,\]
-% then $E[Y^{-1}] < \infty$.
-% If we set $\alpha = \frac{1}{2} a_0$, we then need
-% \[ \lim_{y \to 0} g(y) < \infty.\]
-% To establish a lower bound on $E_f[\log(X)/X]$, we will first need the following bound~\citep[Theorem 2.1 and Remark 2.1]{Birge1989}:
-% \begin{equation}
-%  \label{eq:concave_func_expectation_bound}
-% \phi\left(\frac{E\left[X\phi^\prime(X)\right]}{E[\phi^\prime(X)]}\right) \leq E[\phi(X)].
-% \end{equation}
-% where $\phi$ is an increasing concave function $\phi : (a, b) \to \mathbb{R}$, with $E[\phi^\prime(X)] > 0$.
-% Let $\phi(x) = \log(x)/x$, and thus $\phi^\prime(x) = -(\log(x)-1)/x^2 > 0$ and $\phi^{\prime\prime}(x) = (2\log(x)-3)/x^3 < 0 $.
-% \[ E_f[\log(X)/X] = \int_{\Theta} L(D_0\mid\theta)^{a_0-1} \pi(\theta) \log L(D_0\mid\theta) d\theta \]
-% To get the upper bound, write
-% \begin{align*}
-%  E_f[\log(X)/X] &= \int_{\Theta} L(D_0\mid\theta)^{a_0-1} \pi(\theta) \log L(D_0\mid\theta) d\theta, \\
-%  & \leq \int_{\Theta} L(D_0\mid\theta)^{a_0-1} \pi(\theta)  L(D_0\mid\theta) d\theta = c(a_0) < \infty .
-% \end{align*}
-we conclude $E[1/X^2]$ is finite, completing the proof.
+Again, we can manipulate the bounds on $\log(x)$ to get $1/x - 1/x^2 \leq \log(x)/x$, so we need to show that $E[1/X^2] < \infty$, which holds for $a_0 \geq 2$.
 \end{proof}
+A sufficient (but not necessary) condition for $c^{\prime\prime}(a_0)$ to exist for $ 0 \leq a_0 \leq 2$ is that 
+\[\int_{\Theta} \frac{\pi(\theta)}{[L(D_0\mid\theta)]^2}  d\theta < \infty, \]
+which guarantees finiteness of $c^\prime(a_0)$ by bounding it above.
+This condition is not necessary, however.
+Consider the case in which $\pi(\theta)$ is a Beta distribution with parameters $\alpha$ and $\beta$ and $L( y_0, N_0  \mid \theta)$ is a binomial likelihood.
+Then 
+\[ \int_0^1 t^{\alpha - (2 a_0 y_0 + 1)} (1-t)^{\beta - (2(N_0-y_0) + 1)} dt = \infty,\]
+for $\alpha < 2 a_0 y_0 + 1$ and $\beta < 2(N_0-y_0) + 1$.
+However, letting $A = a_0y_0\log(\theta)$ and $B = a_0(N_0-y_0)\log(1-\theta)$ we see that is
+\begin{align*}
+c^{\prime\prime}(a_0) &= E_f[A^2] + 2E_f[AB] + E_f[B^2], \\
+%  &= (a_0y_0)^2E_f[\log(\theta)^2] + 2a_0^2(N_0-y_0)E_f[\log(\theta)\log(1-\theta)] + (a_0(N_0-y_0))^2 E_f[\log(1-\theta)], \\
+  &\propto E_f[\log(\theta)^2] + E_f[\log(\theta)\log(1-\theta)] + E_f[\log(1-\theta)^2],
+\end{align*}
+which can be shown to be finite for finite $a_0$.
+
 \section{The derivative of $c(a_0)$ for the normal case}
 \label{sec:ca0_norm_deriv}
 Define
