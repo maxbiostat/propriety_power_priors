@@ -71,6 +71,21 @@ The data $D_0 = \{ d_{01}, \ldots, d_{0N_0} \} \in \mathcal{X} \subseteq \mathbb
 
 [CITE DUAN] 
 
+\begin{equation}
+ \label{eq:joint_a0}
+ p(\theta, a_0 \mid D_0, D, \delta) \propto \frac{L(D_0| \theta)^{a_0} \pi(\theta) L(D | \theta) \pi_A(a_0)}{c(a_0)} 
+\end{equation}
+
+which leads to 
+\begin{align}
+ \nonumber
+   p(a_0 \mid D_0, D, \delta)  &= \int_{\Theta}  p(\theta, a_0 \mid D_0, D, \delta) \, d\theta,\\
+  \label{eq:marginal_posterior_a0}
+  & \propto \frac{\pi_A(a_0)}{c(a_0)} \int_{\Theta}  L(D_0| \theta)^{a_0} \pi(\theta) L(D | \theta) \, d\theta
+\end{align}
+when the new data are an exact copy of the historical data, we have
+$$  p(a_0 \mid D_0, D, \delta) \propto \frac{c(a_0 + 1)}{c(a_0)} \pi_A(a_0 \mid \delta) $$
+
 \section{Theory}
 
 We want to show under which conditions
@@ -103,7 +118,7 @@ because $0 \leq a_0 - p_n \leq 1$ and $L(D_0 \mid \theta)^{p_n}\pi(\theta)$ is p
  The power prior on multiple (independent) historical data sets is also a proper density.
 \end{remark}
 \begin{proof}
- Recall that the power prior on multiple historical data sets is of the form~[Eq. 2.9]\citep{Ibrahim2015}:
+ Recall that the power prior on multiple historical data sets is of the form~\citep[Eq. 2.9]{Ibrahim2015}:
  \[ \pi(\theta \mid \boldsymbol D, \boldsymbol a_0) \propto \prod_{k=1}^K L(\theta \mid D_k)^{a_{0k}} \pi_0(\theta). \]
 Assume, without loss of generality, that $L(\theta \mid  D_k)^{a_{0k}} > 1$ for all $\theta$ and let $m := \max(\boldsymbol a_0)$ with $\boldsymbol a_0 := \{ a_{01}, a_{02}, \ldots, a_{0K}\}$.
 Then $\pi(\theta \mid \boldsymbol D, a_0)$ is bounded above by 
@@ -113,10 +128,12 @@ To relax the assumption made in the beginning, notice that this construction als
 \end{proof}
 
 \subsection{Properties of the normalising constant $c(a_0)$}
+\label{sec:properties}
 
 \begin{lemma}
 \label{lm:convex_norm_constant}
- The normalising constant is a convex function of $a_0$.
+Assume $L(D_0 \mid \theta)$ is continuous with respect to $\theta$.
+Then the normalising constant is a strictly convex function of $a_0$.
 \end{lemma}
 \begin{proof}
 Define the normalising constant as a function $c : [0, \infty) \to (0, \infty)$,
@@ -131,7 +148,8 @@ The first and second derivatives are
 c^\prime(a_0) &= \int_{\Theta} L(D_0 \mid \theta)^{a_0} \pi(\theta) \log L(D_0 \mid \theta) \, d\theta, \\
 c^{\prime\prime}(a_0) &= \int_{\Theta} L(D_0 \mid \theta)^{a_0} \pi(\theta) [\log L(D_0 \mid \theta)]^2 \, d\theta,
 \end{align}
-when the integrals exist (see Proposition~\ref{prop:c_is_C2} in Appendix~\ref{sec:further_proofs}). %% LM: to see why, recall that L(D|t) bounds log L(D|t) above.
+and the integrals always exist (see Proposition~\ref{prop:c_is_Cinfinity} in Appendix~\ref{sec:further_proofs}).
+Differentiation under the integral sign is justified because both $L(D_0 \mid \theta)^{a_0} \pi(\theta)$ and $L(D_0 \mid \theta)^{a_0} \pi(\theta) \log L(D_0 \mid \theta)$ are continuous with respect to $\theta$.
 From this we conclude that $c$ is (strictly) convex and $c^\prime$ is monotonic, because $c^{\prime\prime}$ is always positive.
 \end{proof}
 For the goals of this paper, it would be useful to know more about the shape of $c(a_0)$, more specifically if and when its derivatives change signs.
@@ -144,6 +162,14 @@ For the goals of this paper, it would be useful to know more about the shape of 
 % \end{equation*}
 For computational reasons, one is usually interested in $l(a_0) := \log(c(a_0)) $ instead of $c(a_0)$ and hence it is also useful to study the derivative of the log-normalising constant, $l^\prime(a_0) = c^\prime(a_0)/c(a_0)$.
 A key observation is that $l^\prime(a_0)$ changes signs at the same point as $c^\prime(a_0)$ does, a feature we can exploit when designing algorithms for approximating $l(a_0)$ (see Section~\ref{sec:efficient_computation_ca0}).
+
+\begin{remark}
+ \label{rmk:discrete_decreasing}
+ When $L(D \mid \theta)$ is a discrete likelihood, $c(a_0)$ is  decreasing in $a_0$.
+\end{remark}
+\begin{proof}
+ The proof is immediate from Lemma~\ref{lm:convex_norm_constant} and the fact that for a non-degenerate discrete likelihood the function $\log(L(D\mid\theta))$ is negative and hence so is its expectation under the power prior.
+\end{proof}
 
 \subsubsection{Exponential family}
 \label{sec:expo_family}
@@ -176,8 +202,14 @@ we have
  \label{eq:expo_family_const_conj}
 %  c(a_0) &= \boldsymbol h(D_0)^{a_0} H(\tau, n_0) \int_{\boldsymbol\Theta} \exp \left( \eta(\theta)^T \left(a_0 \sum_{i=1}^{N_0} T(d_{0i}) \right) -a_0N_0 A(\theta) \right) \exp\{  \eta(\theta)  \tau^T - n_0A(\theta) \} \, d\theta,\\
  c(a_0) &= \boldsymbol h(D_0)^{a_0} H(\tau, n_0) \int_{\boldsymbol\Theta}  \exp \left[ \eta(\theta)^T \left( \tau + a_0\sum_{i=1}^{N_0} T(d_{0i}) \right) -(n_0  + a_0N_0) A(\theta) \right] \, d\theta, \\
- &= \frac{\boldsymbol h(D_0)^{a_0} H(\tau, n_0)}{H\left( (\tau + a_0\sum_{i=1}^{N_0} T(d_{0i}))^T, n_0  + a_0N_0 \right)}.
+ &= \frac{\boldsymbol h(D_0)^{a_0} H(\tau, n_0)}{H\left( \left[\tau + a_0\sum_{i=1}^{N_0} T(d_{0i})\right]^T, n_0  + a_0N_0 \right)}.
 \end{align}
+Following~(\ref{eq:marginal_posterior_a0}), the marginal posterior for $a_0$ is 
+\begin{equation}
+ \label{eq:marginal_posterior_a0_expoFamily}
+ p(a_0 \mid D_0, D, \delta) \propto \frac{H\left( \left[\tau + a_0\sum_{i=1}^{N_0} T(d_{0i})\right]^T, n_0  + a_0N_0 \right)}{H\left( \left[\tau + a_0\sum_{i=1}^{N_0} T(d_{0i}) + \sum_{j=1}^{N} T(d_{j}) \right]^T, n_0  + a_0N_0 + N \right)} \frac{\boldsymbol h(D)}{\boldsymbol h(D_0)^{a_0} } \pi_A(a_0 \mid \delta)
+\end{equation}
+
 
 \subsection{Efficiently approximating $c(a_0)$}
 \label{sec:efficient_computation_ca0}
@@ -223,11 +255,11 @@ In our computations we have used $v_1 = v_2 =  10$.
  \item Initialize the variables $Z = \{ 0\}$, which will store the visited values of $a_0$,  $F = \{ 0\}$ which will store the values of $l(a_0)$, and $F^{\prime} = \{ \emptyset \}$ which will store the values of $l^{\prime}(a_0)$;
  \item Compute $l(m)$, $l^\prime(m)$, $l(M)$, and $l^\prime(M)$ and store these values in their respective variables.
 \textbf{If} $\text{sgn}(l^\prime(m)) = \text{sgn}(l^\prime(M))$, construct $Z$ to be a regular grid of $J - 2$ values between $m$ and $M$ and estimate $l(\cdot)$ at those values, building $F$ and $F^{\prime}$ accordingly. 
-\textbf{Else}, if $\text{sgn}(c^\prime(m)) \neq \text{sgn}(c^\prime(M))$, set $L^{(1)} = m$ and $U^{(1)} = M$ and  make $J = J - 1$.
+\textbf{Else}, with $\text{sgn}(c^\prime(m)) \neq \text{sgn}(c^\prime(M))$, set $L^{(1)} = m$ and $U^{(1)} = M$ and  make $J = J - 1$.
 Then, for the $k$-th iteration ($k > 1$):
  \begin{enumerate}
  \item Make $z^{(k)} = (L^{(k)} + U^{(k)})/2$, compute $l(z^{(k)})$, $l^{\prime}(z^{(k)})$ and store $Z \leftarrow z^{(k)}$, $F \leftarrow l(z^{(k)})$ and $F^{\prime} \leftarrow l^{\prime}(z^{(k)})$.
- \item Compare derivative signs: \textbf{if} $ \text{sgn}(l^\prime(z^{(k)})) = \text{sgn}(l^\prime(m))$ set $L^{(k + 1)} = z^{(k)}$ and $U^{(k + 1)} = U^{(k)}$. 
+ \item Compare derivative signs: \textbf{if} $ \text{sgn}(l^\prime(z^{(k)})) = \text[{sgn}(l^\prime(m))$ set $L^{(k + 1)} = z^{(k)}$ and $U^{(k + 1)} = U^{(k)}$. 
  Otherwise, set $L^{(k + 1)} = L^{(k)}$ and $U^{(k + 1)} = z^{(k)}$. 
  Compute $\delta^{(k)} = |z^{(k)} - z^{(k-1)}|$ and set $J = J - 1$.
  \textbf{If} $J = 0$, stop.
@@ -248,12 +280,12 @@ Then, for the $k$-th iteration ($k > 1$):
  The algorithm discussed in this section shares many similarities with power (tempered) posterior methods for computing marginal likelihoods~\citep{Friel2008}.
  A key difference is that while the aforementioned methods are concerned with estimating the normalising constant for a single value of $a_0$ ($a_0 = 1$), here we are interested in approximating the whole $c(a_0)$ curve.
 
-\subsubsection{Effect of discretising the approximating function}
-\label{sec:discretisation_error}
+% \subsubsection{Effect of discretising the approximating function}
+% \label{sec:discretisation_error}
 
-In order to evaluate the effect of discretisation of $g_{\boldsymbol\xi}$ on inferences, we evaluated the effect of varying the prediction grid size $K$.
-For three examples where we know the truth, namely the Gaussian and Bernoulli distributions and a linear regression with a normal inverse-Gamma prior, we compared estimates of parameters -- including $a_0$ -- and marginal likelihoods obtained by using the true $c(a_0)$ and the discretised $g_{\boldsymbol\xi}$ with $K =  100, 1000, 10, 000,~\text{and}~\: 20, 000$.
-For prediction, we use a simple, linear grid, with end points $a^{\text{pred}}_1 = 0$ and $a^{\text{pred}}_K = 10$.
+% In order to evaluate the effect of discretisation of $g_{\boldsymbol\xi}$ on inferences, we studied the effect of varying the prediction grid size $K$.
+% For three examples where we know the truth, namely the Gaussian and Bernoulli distributions and a linear regression with a normal inverse-Gamma prior, we compared estimates of parameters -- including $a_0$ -- and marginal likelihoods obtained by using the true $c(a_0)$ and the discretised $g_{\boldsymbol\xi}$ with $K =  100, 1000, 10, 000,~\text{and}~\: 20, 000$.
+% For prediction, we use a simple, linear grid, with end points $a^{\text{pred}}_1 = 0$ and $a^{\text{pred}}_K = 10$.
 % For all experiments we fixed the estimation grid size at $J = 10$ with the same endpoints as the prediction grid $a^{\text{est}}_1 = 0$, $a^{\text{est}}_K = 10$, but placing most ($J-3 = 7$) points on the $[0, 1]$ interval.
 
 \subsubsection{When estimating marginal likelihoods directly is impractical}
@@ -262,8 +294,9 @@ For prediction, we use a simple, linear grid, with end points $a^{\text{pred}}_1
 For very complex, parameter-rich models, it might be the case that estimating $l(a_0)$ -- or $c(a_0)$ -- at a few values of $a_0$ may still be very computationally costly.
 An alternative approach is to only evaluate $l^\prime(a_0)$ instead, which should be cheaper, and then obtain an approximation of $l(a_0)$~\textit{via} quadrature.
 To this end, the algorithm presented in Section~\ref{sec:adapt_grid} can be used with very little change, namely by simply not evaluating (estimating) $l(\cdot)$ at points $Z$.
-For example, one can approximate $l^\prime(a_0)$ -- instead of $l(a_0)$ -- by estimating an approximate curve $g_\xi$, evaluate predictions on a fine grid (say, $K = 20, 000$) and then use midpoint integration to obtain an approximation of $l(a_0)$.
-We analysed this approach on a limited set of examples and found that this approach yielded less accurate approximations when compared to the method approximating $c(a_0)$ directly (see Appendix~\ref{sec:derivative_only})  and thus did not pursue this matter further.
+One can approximate $l^\prime(a_0)$ -- instead of $l(a_0)$ -- by estimating an approximate curve $g_\xi$, evaluate predictions on a fine grid (say, $K = 20, 000$) and then use midpoint integration to obtain an approximation of $l(a_0)$.
+We analysed this approach on a limited set of examples and found that it yielded less accurate approximations when compared to the method approximating $c(a_0)$ directly (see Appendix~\ref{sec:derivative_only})  and thus did not pursue the matter further.
+It is possible that better approximations could be devised by using custom curve-fitting methods , that incorporate the fact that $l^\prime(a_0)$ is monotonically increasing (see Section~\ref{sec:properties}), such as the methods discussed by~\cite{Riihimaki2010} and~\cite{Wang2016}.
 
 % \section*{Comments}
 % \begin{itemize}
@@ -277,17 +310,31 @@ We analysed this approach on a limited set of examples and found that this appro
 \subsection{Computational details}
 \label{sec:computing}
 
-\subsubsection{MCMC via Hamiltonian Monte Carlo}
+In this section 
 
-\subsubsection{Marginal likelihood estimation}
+\subsubsection*{MCMC via Hamiltonian Monte Carlo}
 
-We employed  bridge sampling to compute marginal likelihoods implemented in the R package~\textbf{bridgesampling}~\citep{Gronau2017}.
+The vast majority of the models discussed in this paper lead to posterior distributions which cannot be written in closed-form and hence we must resort to numerical methods.
+Here we employ Hamiltonian -- or Hybrid -- Monte Carlo (HMC), implemented in the Stan programming language~ \citep{Carpenter2017}.
+An excellent review of HMC can be found in~\cite{Neal2011}.
+All of the analyses reported here are the result of running four independent chains of 2000 iterations each, with the first 1000 removed as burn-in.
+Convergence was checked for by making sure all runs achieved a potential scale reduction factor (PSRF, $\hat{R}$) smaller than $1.01$.
+For all expectations, we ensured Monte Carlo error (MCSE) was smaller than 5\% of the posterior standard deviation.
+
+\subsubsection*{Marginal likelihood estimation}
+
+We employed bridge sampling~\citep{CITA} to compute marginal likelihoods implemented in the R package~\textbf{bridgesampling}~\citep{Gronau2017}.
 We used HMC as before, with four independent chains of $2000$ iterations each, removing half of each chain as burn-in/warm-up, resulting in $4000$ samples being kept.
 
 \section{Illustrations}
 \label{sec:illustrations}
 
-In this section we discuss applications of the normalised power prior, for examples where the normalising constant is known in closed-form and examples where it is not.  
+In this section we discuss applications of the normalised power prior.
+We first discuss four examples where $c(a_0)$ is know in closed-form and use these as a benchmark for the approximations discussed in this paper.
+Then we move on to explore two examples where the normalising constant is not known in closed-form and thus only the approximation is available.  
+
+In all examples we employed a Beta prion on $a_0$ with parameters $\eta = \nu = 1$ and thus restricted attention to $a_0 \in [0, 1]$ when approximating the normalising constant -- i.e., we used $M = 1$.
+Moreover, we used $m = 0.05$ and employed budget of $J = 20$ evaluations of $l(a_0)$ via bridge sampling.   
 
 \subsection{Bernoulli likelihood}
 \label{sec:reproduce_N2009}
@@ -318,16 +365,10 @@ The derivative, $c^\prime(a_0)$, evaluates to
 c^\prime(a_0) = \frac{\mathcal{B}(z_0, w_0) \left(y_0 \left[\psi_0(w_0) - \psi_0(z_0) \right] + N_0 \left[ \psi_0(z_0) - \psi_0(w_0 + z_0) \right] \right) }{\mathcal{B}(c, d)},
 \end{equation}
 where $z_0 = a_0 y_0 + c $ and $w_0 = a_0 (N_0 -y_0) + d$.
-This tells us that $c(a_0)$ is a monotonically decreasing function of $a_0$ (Remark~\ref{rmk:Bernoulli_cA0_prime}).
-\begin{remark}
-\label{rmk:Bernoulli_cA0_prime}
- $c^\prime(a_0)$ is always negative for the Bernoulli-Beta model.
-\end{remark}
-
 If one observes new data $D = (N, y) $, one can then compute a posterior $p(\theta \mid a_0, D_0, D)$.
 In the situation where one lets $a_0$ vary by assigning it a prior $\pi_A$, one can write the marginal posterior for $a_0$ explicitly~\cite[Eq. 8]{Neuenschwander2009}:
 \begin{equation}
- \label{eq:marginal_posterior_a0}
+ \label{eq:marginal_posterior_a0_Bernoulli}
  p(a_0 \mid D_0, D) \propto c(a_0) \pi_A(a_0) \mathcal{B}(a_0 y_0 + y  + c -1, a_0(N_0-y_0) + (N -y) + d -1 ).
 \end{equation}
 
@@ -364,7 +405,7 @@ We approximated $l(a_0)$ using $J = 15$ grid points for estimation and $K = 20, 
 \end{table}
 
 We show the marginal posteriors of $a_0$ obtained for each scenario in Figure~\ref{fig:marginal_a0_Bernoulli}.
-As evidenced in Table~\ref{tab:results_Bernoulli}, the approximately normalised power prior are in close agreement with the closed-form solution, for a variety of shapes the distribution takes across scenarios.
+As shown in Table~\ref{tab:results_Bernoulli}, the approximately normalised power prior are in close agreement with the closed-form solution, for a variety of shapes the distribution takes across scenarios.
 In particular, scenarios 1 and 4 are designed such that posterior estimates of $a_0$ should be around $1/2$ in order to reflect the fact that current data is compatible with historical data.
 On the other hand, scenarios 2 and 3 are designed such that there is mild incompatibility between historical and current data, and this is reflected in the properly normalised posteriors for $a_0$, whereas the unnormalised posteriors yield counter-intuitive results.
 
@@ -381,7 +422,7 @@ On the other hand, scenarios 2 and 3 are designed such that there is mild incomp
 \hfill
 \end{center}
 \caption{\textbf{Marginal distributions of $a_0$ for the Bernoulli example}.
-We show the marginal posterior of $a_0$ as given by~(\ref{eq:marginal_posterior_a0}), properly normalised~\textit{via} quadrature.
+We show the marginal posterior of $a_0$ as given by~(\ref{eq:marginal_posterior_a0_Bernoulli}), normalised~\textit{via} quadrature.
 Colours (and horizontal tiles) show the normalisation method used: none (unnormalised), exact (normalised) or approximate.
 Horizontal dashed line marks the Beta prior with parameters $\eta = \nu = 1$.
 Please note that the x-axes differ between panels.
@@ -389,7 +430,7 @@ Please note that the x-axes differ between panels.
 \label{fig:marginal_a0_Bernoulli}
 \end{figure}
 
-\subsection{Poisson}
+\subsection{Poisson likelihood}
 \label{sec:poisson_illustration}
 Now suppose the historical data consists of $N_0$ observations $y_{0i} \in \{0, 1, \ldots \}$, assumed to come from a Poisson distribution.
 The model is 
@@ -413,12 +454,6 @@ For this model, we have
  c^\prime(a_0) = c(a_0) \left[ -\log(\boldsymbol p^\prime) - \frac{N_0 (\alpha_0 + \boldsymbol s a_0) }{\beta_0 + N_0a_0} - \boldsymbol s \log(\beta_0 + N_0a_0) + \boldsymbol s \psi_0(\alpha_0 + \boldsymbol s a_0) \right].
 \end{equation}
 
-Similarly to the Bernoulli case, it can also be shown that $c(a_0)$ is a monotonically decreasing function of $a_0$ (Remark~\ref{rmk:poisson_c_prime}).
-\begin{remark}
-\label{rmk:poisson_c_prime}
-$c^\prime(a_0)$ is always negative for the Poisson-Gamma model.
-\end{remark}
-
 Here we analyse simulated Poisson data in order to highlight the quality of the approximation to $c(a_0)$ as the number of grid points $K$ increases.
 We simulated $N_0 = 200$ historical data points $\boldsymbol y_0$ with $\lambda = 2$ and $N = 100$ current data points $\boldsymbol y$ with the same rate parameter.
 
@@ -438,7 +473,7 @@ In panel (a) we show the marginal posterior for $a_0$, using horizontal dashed l
 \label{fig:poisson}
 \end{figure}
 
-\subsection{Gaussian}
+\subsection{Gaussian likelihood with unknown mean and variance}
 \label{sec:gaussian_illus}
 
 Now we move on to study a case where $c(a_0)$ is non-monotonic and thus presents a more challenging setting.
@@ -469,18 +504,18 @@ We construct the Gamma prior on $\tau$ with $\alpha_0 = \beta_0 = 1$ and assign 
 This
 % admittedly odd
 choice of hyperparameters leads to a function $c(a_0)$ -- Equation~(\ref{eq:cA0_gaussian}) -- that resembles a concave up parabola (Figure~\ref{fig:gaussian_results}a). 
-We then generate $N =20$ new points from the same distribution to be used as current data.
+We then generate $N = 20$ new points from the same distribution to be used as current data.
 The points show the values of $l(a_0)$ and $l^\prime(a_0)$ estimated using the algorithm described in Section~\ref{sec:adapt_grid}, which exploits the derivatives of $c(a_0)$ to place more points closer to the region where $c^\prime(a_0)$ (and $l^\prime(a_0)$) changes signs.
 
 We show the resulting marginal posteriors for $\mu$ and $\tau$ as well as $a_0$ under no normalisation, exact and approximate normalisation with various $K$ in Figure~\ref{fig:gaussian_results}b and~\ref{fig:gaussian_results}c.
 The first observation is that approximations with $K > 100$ seem to produce marginal posteriors for $a_0$ that resembles the exactly normalised distribution quite closely, even in this setting, where $c(a_0)$ is non-linear.
 
-In terms of parameter posteriors, we find that the posterior is not very sensitive to the value of $a_0$ as shown by the overlap between marginal posteriors with no normalisation as well as exact and approximate normalisation.
+In terms of parameter posteriors, we find that the posterior is not very sensitive to the value of $a_0$, as shown by the overlap between marginal posteriors with no normalisation as well as exact and approximate normalisation.
 Even in this setting the approximately normalised marginal posteriors match their exact counterparts closely.
 
 \begin{figure}[!ht]
 \hfill
-\subfigure[$l(a_0)$]{\includegraphics[width=7cm]{../figures/Gaussian_curves.pdf}}
+\subfigure[(log) normalising constant ]{\includegraphics[width=7cm]{../figures/Gaussian_curves.pdf}}
 \hfill
 \subfigure[$a_0$ posterior]{\includegraphics[width=7cm]{../figures/a0_posterior_Gaussian.pdf}}\\
 \hfill
@@ -503,12 +538,12 @@ This suggests that the adaptive scheme would produce better results in situation
 
 \subsubsection{Linear regression with a normal inverse-Gamma prior}
 \label{sec:linreg_ex}
-To conclude the examples where we know $c(a_0)$ in closed-form, we present a popular model for Bayesian linear regression.
+To conclude the examples for which we know $c(a_0)$ in closed-form, we present a popular model for Bayesian linear regression.
 Suppose $\boldsymbol X_0$ is a $N_0 \times P$ full-rank matrix of predictors and $\boldsymbol y_0 = \{y_{01}, \ldots, y_{0N_0} \}$ is a vector of observations.
 For illustrative purposes, we will employ a mean and variance parametrisation, which naturally leads to a normal inverse-Gamma conjugate prior.
 The model is 
 \begin{align*}
- \sigma^2 &\sim \text{Inverse-Gamma}(\alpha_0, \beta_0),\\
+ \sigma^2 &\sim \text{Inverse-Gamma}(\alpha_0, \gamma_0),\\
  \epsilon_i \mid \sigma^2  &\sim \text{Normal}(0, \sigma^2), \\
  \beta \mid \sigma^2 &\sim \text{Normal}(\boldsymbol \mu_0, \sigma^2\boldsymbol\Lambda_0^{-1}),\\
  y_{0i} &= \boldsymbol X_{0i}^\top \boldsymbol\beta + \epsilon_i, \\
@@ -517,7 +552,7 @@ where $\boldsymbol\beta$ is a $ 1 \times P$ vector of coefficients and $\boldsym
 The posterior is again a normal inverse Gamma and thus
 \begin{align}
  \label{eq:cA0_regression}
-c(a_0) &= \sqrt{\frac{|\boldsymbol\Lambda_n|}{|\boldsymbol\Lambda_0^{-1}|}} \frac{\beta_0^{\alpha_0}}{\beta_n^{\alpha_n}}\frac{\Gamma(\alpha_0)}{\Gamma(\alpha_n)}  (2\pi)^{-N_0 a_0/2},\\
+c(a_0) &= \sqrt{\frac{|\boldsymbol\Lambda_n|}{|\boldsymbol\Lambda_0^{-1}|}} \frac{\gamma_0^{\alpha_0}}{\gamma_n^{\alpha_n}}\frac{\Gamma(\alpha_0)}{\Gamma(\alpha_n)}  (2\pi)^{-N_0 a_0/2},\\
 \nonumber
 \boldsymbol\Lambda_n &= \boldsymbol X_{\star}^\top\boldsymbol X_{\star} + \boldsymbol \Lambda_0^{-1}, \\
 \nonumber
@@ -525,23 +560,23 @@ c(a_0) &= \sqrt{\frac{|\boldsymbol\Lambda_n|}{|\boldsymbol\Lambda_0^{-1}|}} \fra
 \nonumber
 \alpha_n &= \alpha_0 + \frac{1}{2}a_0N_0,\\
 \nonumber
-\beta_n &= \beta_0 + \frac{1}{2}\left( \boldsymbol y_{\star}^\top \boldsymbol y_{\star} + \boldsymbol \mu_0^\top \boldsymbol \Lambda_0^{-1} \boldsymbol \mu_0 - \boldsymbol\mu_n^\top \boldsymbol \Lambda_n \boldsymbol \mu_n  \right),
+\gamma_n &= \gamma_0 + \frac{1}{2}\left( \boldsymbol y_{\star}^\top \boldsymbol y_{\star} + \boldsymbol \mu_0^\top \boldsymbol \Lambda_0^{-1} \boldsymbol \mu_0 - \boldsymbol\mu_n^\top \boldsymbol \Lambda_n \boldsymbol \mu_n  \right),
 \end{align}
 where $\boldsymbol X_{\star} = \sqrt{a_0} \boldsymbol X_0$ and $\boldsymbol y_{\star} = \sqrt{a_0} \boldsymbol y_0$, and $|A|$ denotes the determinant of $A$.
 
 We generate $N_0 = 1000$ data points, drawing the columns of $\boldsymbol X_0$ from a standard normal distribution and using $\boldsymbol \beta = \{ -1, 1, 0.5, -0.5\}$.
 The response variable $Y_0$ is generated using a normal distribution with variance $\sigma^2 = 4$, i.e. $y_{0i} \sim \text{Normal}(\boldsymbol\beta^T \boldsymbol X_{0i}, 4)$.
 For the current data, we generate $N = 100$ points using the same data-generating process.
-To complete model specification we set $\alpha_0 = 1/2$, $\beta_0 = 2$ and $\boldsymbol\Lambda_0 = \frac{3}{2}\boldsymbol I_P$, where $\boldsymbol I_P$ is the $P \times P$ identity matrix.
+To complete model specification we set $\alpha_0 = 1/2$, $\gamma_0 = 2$ and $\boldsymbol\Lambda_0 = \frac{3}{2}\boldsymbol I_P$, where $\boldsymbol I_P$ is the $P \times P$ identity matrix.
 
-Results of the power prior analysis of this data are shown in Table~\ref{tab:results_NIGregression}.
-
+Results of the power prior analysis of this data are shown in Table~\ref{tab:results_NIGregression} and indicate that while parameter recovery is similar for the exactly normalised and approximately normalised posteriors, the approximate method does not recover the lower tail of the marginal posterior of $a_0$ well.
 \begin{table}[!ht]
 \label{tab:results_NIGregression}
 \caption{\textbf{Parameter estimates for the linear regression example}.
 We report the posterior mean and 95\% BCI for the regression parameters $\boldsymbol\beta$, response variance $\sigma^2$ and the power prior scalar, $a_0$.
 We employed a  $\text{Beta}(\eta = \nu = 1)$ as prior for $a_0$.
 }
+{\small
 \begin{tabular}{cccccc}
 \hline 
  Parameter & True & None & Exact & app. $K = 50$ & app. $K = 10000$ \\
@@ -551,29 +586,49 @@ $\beta_1$ & 1 & 0.78 (0.38, 1.18) & 0.89 (0.66, 1.09) & 0.88 (0.69, 1.08) & 0.89
 $\beta_2$ & 0.5 & 0.32 (-0.05, 0.70) & 0.50 (0.24, 0.70) & 0.50 (0.28, 0.70) & 0.51 (0.29, 0.69) \\
 $\beta_3$ & -0.5 & -0.68 (-1.04, -0.34) & -0.57 (-0.79, -0.39) & -0.58 (-0.78, -0.39) & -0.57 (-0.78, -0.38) \\
 $\sigma^2$ & 4 & 3.7 (2.8, 4.8) & 4.4 (3.6, 5.0) & 4.4 (3.8, 5.1) & 4.4 (3.8, 5.0) \\
-$a_0$ & -- & 0.00 (0.00, 0.00) & 0.48 (0.05, 0.97) &0.43 (0.11, 0.94) & 0.49 (0.12, 0.97)\\
+$a_0$ & -- & 0.00 (0.00, 0.00) & 0.48 (0.05, 0.97) &0.43 (0.11, 0.94) & 0.49 (0.09, 0.97)\\
 \hline
 \end{tabular}
+}
 \end{table}
 
 \subsection{Logistic regression}
 \label{sec:logistic_regression}
 
 Next, we approach a problem for which $c(a_0)$ cannot be written in closed-form.
-We simulate data with known parameters and study how parameters are recovered as a function of the grid size $K$.
+Logistic regression is very popular model for binary outcomes in the presence of explanatory variables (covariates). 
+Taking $\boldsymbol Y_0 = \{y_{01}, y_{02}, \ldots, y_{0N_0} \}$ with $y_{0i} \in \{0, 1\}$ and a (assumed full rank) $N_0 \times P$ matrix of covariates $\boldsymbol X_0$ as historical data, the model we consider here is 
+\begin{align*}
+ y_{0i} &\sim \text{Bernoulli}(\theta_i), \\
+ \theta_i &= \frac{\exp(\alpha + \boldsymbol X_{0i}^T \boldsymbol \beta)}{1 + \exp(\alpha + \boldsymbol X_{0i}^T \boldsymbol \beta)},\\
+ \alpha & \sim \text{Normal}(0, 1), \\
+ \beta_i &\sim \text{Normal}(0, 1),
+\end{align*}
+where $\alpha$ is the intercept and $\boldsymbol\beta$ is a $P$-dimensional vector of coefficients.
+Since we do not have the benefit of a closed-form $c(a_0)$ in this example, we simulate data with known parameters and study how parameters are recovered as a function of the grid size $K$.
+First, we generate $N_0 = 1000$ historical data points $(\boldsymbol Y_0, \boldsymbol X_0)$, where the matrix of covariates is constructed in the same manner as in the linear regression example.
+We set $\alpha = 1.2$ and $\boldsymbol\beta = \{ -1, 1, 0.5, -0.5\}$.
+For the current data, we use the same data-generating process to create a set of $N = 100$ new data points $(\boldsymbol Y, \boldsymbol X)$.
+The chief idea is that a properly normalised power prior would allow one to capture the similarities between the historical and current data, while an analysis lacking the proper normalisation would yield counter-intuitive and suboptimal results, as demonstrated in the previous examples.
+The results shown in Figure~\ref{fig:logistic_regression}a seem to support this intuition, since the approximately normalised power prior leads to posterior estimates that better recover the generating parameters, while the unnormalised prior leads to more diffuse posteriors that do not capture the full information contained in the data. 
 
 \begin{figure}[!ht]
 \hfill
-\subfigure[$a_0$]{\includegraphics[width=7cm]{../figures/a0_posterior_RegressionLogistic.pdf}}
-\hfill
 \subfigure[Coefficients]{\includegraphics[width=7cm]{../figures/parameter_posterior_LogisticRegression.pdf}}
 \hfill
+\subfigure[$a_0$]{\includegraphics[width=7cm]{../figures/a0_posterior_RegressionLogistic.pdf}}
+\hfill
 \caption{\textbf{Results for the logistic regression example}.
-The panels (and colours) correspond to the posterior distribution of the parameter $a_0$ when $c(a_0)$ is accounted for and when it is not included.
+Panel (a) shows the marginal posterior distributions for model parameters, with colours again pertaining to the approximation scheme.
+Vertical dashed lines show the ``true'' parameter values of the data-generating process.
 Horizontal dashed lines show the prior density of a $\text{Beta}(\eta = 1, \nu = 1)$.
+In panel (b) the subpanels (and colours) correspond to the posterior distribution of the parameter $a_0$ when $c(a_0)$ is accounted for using various grid sizes $K$ and when it is not included.
 }
 \label{fig:logistic_regression}
 \end{figure}
+
+In addition we see that the approximate posteriors start to stabilize for $K > 1000$, showcasing the increased difficulty of this  multi-dimensional problem (see also Section~\ref{sec:linreg_ex}).
+The bimodal marginal posterior for $a_0$ (Figure~\ref{fig:logistic_regression}b) 
 
 \subsection{Survival model with cure fraction}
 \label{sec:survival}
@@ -624,10 +679,10 @@ Prior on $a_0$, $\text{Beta}(\eta, \nu)$    & Parameter & Unnormalised         &
 \end{tabular}
 \end{table}
 
-\section*{TODO:}
-\begin{itemize}
-  \item check derivation of conjugate exponential family result;
-\end{itemize}
+% \section*{TODO:}
+% \begin{itemize}
+%   \item check derivation of conjugate exponential family result;
+% \end{itemize}
 
 % \section{Roadmap}
 % The idea is to review and justify power priors for general regression models.
@@ -666,9 +721,13 @@ Gaussian example is artificial, for most settings $l(a_0)$ will be monotonic.
 
 Improvements: better approximating function (GP with first and second derivatives)
 
+One might complain that $J=20$ is too much, but in a fixed power prior analysis one would also usually do a sensitivity analysis.
+
+
 \section*{Acknowledgements}
 
-LMC would like to thank Leo Bastos (PROCC/Fiocruz) for helpful discussions and Dr. Beat Neuenschwander for clarifications regarding his paper.
+The authors would like to thank Aditya Ravuri for pointing out the first part of the proof of Theorem 1. 
+LMC would like to thank Leo Bastos (PROCC/Fiocruz) for helpful discussions, Dr. Beat Neuenschwander for clarifications regarding his paper and Chris Koenig for testing the computer code developed for this paper.
 This study was financed in part by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES) Finance Code 001.
 LMC is supported by a postodoctoral fellowship from CAPES.
 
@@ -681,87 +740,27 @@ LMC is supported by a postodoctoral fellowship from CAPES.
 \section{Additional results}
 \label{sec:further_proofs}
 
-Proof of Remark~\ref{rmk:Bernoulli_cA0_prime}:
-\begin{proof}
-Because $\mathcal{B}(a, b)$ is positive for $a, b > 0$, we can disregard terms involving the beta function and only look at  
-\[  y_0 \left[\psi_0(w_0) - \psi_0(z_0) \right] + N_0 \left[ \psi_0(z_0) - \psi_0(w_0 + z_0) \right],  \]
-where the second term is always negative because $\psi_0$ is monotonic for positive arguments.
-For the first term to be positive, we need $w_0 > z_0$, but this leads to the second term dominating.
-To see this, let $y_0 = N_0$ to arrive at $\psi_0(w_0) - \psi_0(w_0 + z_0) < 0$.
-\end{proof}
-
-Proof of Remark~\ref{rmk:poisson_c_prime}:
-\begin{proof}
-First, notice that $c^\prime(a_0) = c(a_0)z(a_0)$, where
-\begin{equation}
- \label{eq:poisson_za0}
- z(a_0) = -\log(\boldsymbol p^\prime) - \frac{N_0 (\alpha_0 + \boldsymbol s a_0) }{\beta_0 + N_0a_0} - \boldsymbol s \log(\beta_0 + N_0a_0) + \boldsymbol s \psi_0(\alpha_0 + \boldsymbol s a_0),
-\end{equation}
-such that $z(a_0)>0$ implies $c^\prime(a_0) > 0$.
-Following Lemma~\ref{lm:convex_norm_constant}, we know that $c^{\prime}(a_0)$ is monotonic and increasing.
-Taking limits, we have
-\[ \lim_{x \to \infty} z(x) = -\log(\boldsymbol p^\prime) - \boldsymbol s - \boldsymbol s \left[\log(\boldsymbol s) - \log(N_0) \right] \leq 0,  \]
-which establishes the claim.
-\end{proof}
-
-\begin{remark}
- \label{rmk:log_inequality}
- For $y > 0$ and $\beta \in (1, 2]$, the following holds:
- \begin{equation}
-  \label{eq:log_bound}
-  \frac{1}{\beta - 1} - \frac{y^{1-\beta}}{\beta - 1} \leq \log(y).
- \end{equation}
-\end{remark}
-\begin{proof}
- We have $\log(z) = \int_{z}^1 \frac{1}{t}\,dt$ and also
- \[ \int_{y}^1 \frac{1}{t^\beta}\,dt \leq \int_{y}^1 \frac{1}{t}\,dt, \] 
- which gives the bound.
-\end{proof}
-For attribution, please see~\cite{macavity2016}.
-
 \begin{proposition}
-\label{prop:c_is_C2}
-The first and second derivatives of $c(a_0)$ always exist for $a_0 > 0$ and $a_0 > 1$, respectively. 
+\label{prop:c_is_Cinfinity}
+All of the derivatives of $c(a_0)$ exist, i.e., $c \in \mathcal{C}^{\infty}$.
 \end{proposition}
 \begin{proof}
-Here we will assume that $L(D_0 \mid \theta) > 0\: \forall \theta \in \Theta$.
+First, we will assume that $L(D_0 \mid \theta) > 0\: \forall \theta \in \Theta$.
 For covenience, let
 \[  f(\theta) = \frac{L(D_0 \mid \theta)^{a_0} \pi(\theta)}{c(a_0)}. \]
-To see that $-\infty < c^\prime(a_0)  < \infty$, first make $ X = L( D_0 \mid \theta)$ and  apply Jensen's inequality to get $E_f[\log(X)] \leq \log\left(E_f[X]\right)$, then apply Theorem~\ref{thm:integrability}.
-We shall first establish the lower bound for $ 0 < a_0 \leq 1$, by applying Remark~\ref{rmk:log_inequality}:
-\[\frac{1}{\beta - 1} - \frac{E_f[X^{1-\beta}]}{\beta - 1} \leq E_f[\log X], \] 
-which suggests one needs to show that $E_f[X^{1-\beta}] < \infty$.
-For $ 0 < a_0 \leq 1$, this can be achieved by setting $\beta = 1  + a_0$ to get $E_f[X^{1-\beta}] = 1/c(a_0)$ because the initial prior, $\pi(\theta)$, is proper.
-For $a_0 > 1$, it suffices to set $\beta = 2$ and apply Theorem~\ref{thm:integrability}.
-
-Now, to show that for $a_0 > 1$,
-\[ c^{\prime\prime}(a_0) = \int_{\Theta} L(D_0 \mid \theta)^{a_0} \pi(\theta) [\log L(D_0 \mid \theta)]^2 \, d\theta < \infty, \]
-we will first assume that $L(D_0 \mid \theta) < 1 \: \forall\: \theta \in \Theta$, because if $L(D_0 \mid \theta) > 1$ the integral is bounded above by $c(a_0 + 2)$ and hence is finite following Theorem~\ref{thm:integrability}.
-For $0 < y \leq 1$, the usual bounds on $\log(y)$ can be manipulated to get 
-$$ (y-1)\log(y) \leq \log(y)\log(y) \leq - \frac{\log(y)}{y} . $$
-Hence all that remains is to show that $ - \infty < E_f[\log(X)/X]$.
-Again, for $\beta \in (1, 2]$, we can use Remark~\ref{rmk:log_inequality} to arrive at
-\[ \frac{1}{y(\beta - 1)} - \frac{1}{y^{\beta}(\beta - 1)} \leq\, \frac{\log(y)}{y}, \]
-so we need to show that $E[1/X^\beta] < \infty$.
-If we set $\beta = 2 - a_0$, we can use Theorem~\ref{thm:integrability} to show that for $ a_0 > 1$,
-\[ E[1/X^\beta] = \frac{1}{c(a_0)}\int_{\Theta} L(D_0 \mid \theta)^{2a_0 - 2} \pi(\theta) \,d\theta < \infty, \]
-which concludes the proof.
+Now, consider the change of variables $\theta \mapsto l$, with $l = \log(L(D \mid \theta))$.
+Then we write
+\[ h (l) = \frac{\exp(a_0 l) g(l)}{z(a_0)},\]
+where $g(l)$ is a non-negative function that accomodates the transform $\theta \mapsto l$ with respect to the prior $\pi$ and $z(a_0)$ is the appropriate normalsing constant, guaranteed to exist by Theorem~\ref{thm:integrability}.
+The moment-generating function (MGF) of $l$ is 
+\[ M_t(l) = E_h[\exp(tl)] = \int_{-\infty}^\infty \frac{\exp((t + a_0) l) g(l)}{z(a_0)}\, dl.\]
+Since $E_h[l^r] \equiv  \frac{d^r c(a_0)}{d a_0^r}$, all that remains is to show that $M_r(l)$ exists for all $r \geq 0$.
+Under the change of variables discussed above, Theorem~\ref{thm:integrability} shows that
+\[ \int_{-\infty}^\infty \exp(wl) g(l)\, dl < \infty,\]
+for $w > 0$.
+Making $w = t + a_0$ concludes the proof.
 \end{proof}
-A sufficient (but not necessary) condition for $c^{\prime\prime}(a_0)$ to exist for $ 0 \leq a_0 \leq 1$ is that 
-\[\int_{\Theta} \frac{\pi(\theta)}{[L(D_0 \mid \theta)]^2}  \, d\theta < \infty, \]
-which also guarantees finiteness of $c^\prime(a_0)$ by bounding it above.
-To see that this condition is not necessary, consider the case in which $\pi(\theta)$ is a Beta distribution with parameters $\alpha$ and $\beta$ and $L( y_0  \mid \theta, N_0)$ is a binomial likelihood.
-Then 
-\[ \int_0^1 t^{\alpha - (2 a_0 y_0 + 1)} (1-t)^{\beta - (2(N_0-y_0) + 1)} dt = \infty,\]
-for $\alpha < 2 a_0 y_0 + 1$ and $\beta < 2(N_0-y_0) + 1$.
-However,
-% letting $A = y_0\log(\theta)$ and $B = (N_0-y_0)\log(1-\theta)$ we see that
-\begin{align*}
-% c^{\prime\prime}(a_0) &= E_f[A^2] + 2E_f[AB] + E_f[B^2], \\
-%  &= (a_0y_0)^2E_f[\log(\theta)^2] + 2a_0^2(N_0-y_0)E_f[\log(\theta)\log(1-\theta)] + (a_0(N_0-y_0))^2 E_f[\log(1-\theta)], \\
- c^{\prime\prime}(a_0) &\propto E_f[\log(\theta)^2] + E_f[\log(\theta)\log(1-\theta)] + E_f[\log(1-\theta)^2],
-\end{align*}
-which can be shown to be finite.
+
 
 \section{The derivative of $c(a_0)$ for the normal case}
 \label{sec:ca0_norm_deriv}
@@ -795,20 +794,6 @@ we arrive at
  \frac{N_0}{2} \psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right) &>  \frac{\Delta\left( \alpha_0 + \frac{N_0}{2} a_0 \right) }{\Delta a_0 + \beta_0} + \frac{N_0}{2}\log{\left( \Delta a_0+ \beta_0 \right) } + \frac{2N_0}{a_0N_0+\kappa_0} + \log(2\pi) \frac{N_0}{2}, \\
 \psi_0\left( \alpha_0 +  \frac{N_0}{2} a_0 \right) &>  \frac{\Delta\left( 2\alpha_0 + N_0a_0 \right) }{N_0\left(\Delta a_0 + \beta_0\right)} + \log{\left( \Delta a_0+ \beta_0 \right) } + \frac{4}{a_0N_0+\kappa_0} + \log(2\pi).
 \end{align}
-
-\section{Full conditional of $\lambda$ for an Inverse Gaussian likelihood}
-\label{sec:full_cond_invGaussian}
-
-We need to show that the full conditional of $\lambda$ will~\textbf{always} be a Gamma distribution.
-Recalling that $\mu > 0$, we need to prove that 
-\[ \left( -\frac{a_0N_0}{\mu} + \frac{a_0\boldsymbol s }{2\mu^2} + \frac{a_0\boldsymbol s^\prime}{2} + \beta_\lambda \right) = \frac{-2a_0N_0\mu + a_0\boldsymbol s + (a_0 \boldsymbol s^\prime + 2\beta_\lambda)\mu^2 }{2\mu^2} \geq 0,\]
-whence, equivalently,
-\[ \boldsymbol s^\prime\mu^2 -2N_0\mu + \boldsymbol s \geq 0. \]
-Since $\boldsymbol s^\prime > 0$, this happens whenever
-\[ 4N_0^2 - 4\boldsymbol s^\prime\boldsymbol s \leq 0, \]
-% i.e., when $N_0^2 - \boldsymbol s^\prime\boldsymbol s < 0$,
-which is always true, by direct application of Titu's lemma.
-
 
 \section{Comparing approximations of $l(a_0)$}
 \label{sec:derivative_only}
