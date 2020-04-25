@@ -1,4 +1,4 @@
-# propriety_power_priors
+# On the normalised power prior
 On the propriety of the power prior for general models.
 
 A [power prior](https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.6728) is a way of constructing an informative prior distribution based on historical data.
