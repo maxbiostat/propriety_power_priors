@@ -11,8 +11,13 @@ parameters{
   real<lower=0> alpha;
   real<lower=0> beta;
 }
+transformed parameters{
+  real logL = gamma_lpdf(y0 | alpha, beta);
+  real logL_sq = square(logL);
+}
 model{
-  target += a_0 * gamma_lpdf(y0 | alpha, beta);
+  /*power prior*/
   target += gamma_lpdf(alpha | eta_a, nu_a);
   target += gamma_lpdf(beta | eta_b, nu_b);
+  target += a_0 * logL;
 }

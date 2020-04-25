@@ -13,9 +13,13 @@ parameters{
   vector[P] beta;
   real<lower=0> sigma_sq;
 }
+transformed parameters{
+  real logL = normal_lpdf(y0 | X0*beta, sqrt(sigma_sq) );
+  real logL_sq = square(logL);
+}
 model{
   /*power prior*/
-  target += a_0 * normal_lpdf(y0 | X0*beta, sqrt(sigma_sq) );
   target += multi_normal_lpdf(beta| mu_beta, sigma_sq * lambda_0);
   target += inv_gamma_lpdf(sigma_sq | alpha0, beta0);
+  target += a_0 * logL;
 }

@@ -19,11 +19,15 @@ data{
 parameters{
   real<lower=0> mu;
   real<lower=0> lambda;
-  real<lower=0, upper=1> a_0;
+  real<lower=0,upper=1> a_0;
+}
+transformed parameters{
+  real logL = inverse_gaussian_lpdf(y0[i] | mu, lambda);
+  real logL_sq = square(logL);
 }
 model{
   /*Power prior*/
-  for(i in 1:N0) target += a_0 * inverse_gaussian_lpdf(y0[i] | mu, lambda);
+  for(i in 1:N0) target += a_0 * logL;
   target += gamma_lpdf(mu | alpha_m, beta_m);
   target += gamma_lpdf(lambda | alpha_l, beta_l);
   target += beta_lpdf(a_0 | delta, nu);
