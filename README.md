@@ -1,5 +1,4 @@
 # On the normalised power prior
-On the propriety of the power prior for general models.
 
 A [power prior](https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.6728) is a way of constructing an informative prior distribution based on historical data.
 The main idea is to raise the likelihood to a certain scalar, `a0`, usually between 0 and 1, in order to control the amount of information borrowed from the historical data. 
@@ -15,6 +14,6 @@ The steps are:
 3. Now you can modify your Stan program to take a dictionary of approximate values for `c(a0)`, like [so](https://github.com/maxbiostat/propriety_power_priors/blob/master/code/stan/simple_Bernoulli_posterior_normalised_approximate.stan);
 4. Finally, run your posterior analysis, as exemplified [here](https://github.com/maxbiostat/propriety_power_priors/blob/master/code/simple_Bernoulli_posterior.r);
 
-Any doubts, shoot me an email at `lmax` dot `fgv` at gmail.
+Any doubts, shoot me a message at `lmax` dot `fgv` at gmail.
 
 Many thanks to Chris Koenig and [Ben Jones](https://www.plymouth.ac.uk/staff/ben-jones) for testing early version of the code.
