@@ -30,4 +30,3 @@ adaptive.time <- system.time(
 ## Exporting 
 write.csv(adaptive.ca0.estimates$result, row.names = FALSE,
           file = paste("../data/constant_data/Poisson_logCA0_adaptive_J=", J, ".csv", sep = ""))
-

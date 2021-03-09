@@ -1,8 +1,6 @@
 source("data_Poisson.r")
 
-library(rstan)
-rstan_options(auto_write = TRUE)
-options(mc.cores = 4)
+library(npowerPrioR)
 
 po.data <- list(
   N0 = N_0,
@@ -47,7 +45,7 @@ analytical_l_p <- function(x){
 J <- 20
 maxA <- 1
 
-adaptive.ca0.estimates <- read.csv(paste("../data/constant_data/Poisson_logCA0_adaptive_J=", J, ".csv", sep = "")) 
+adaptive.ca0.estimates <- read.csv(paste("../../data/constant_data/Poisson_logCA0_adaptive_J=", J, ".csv", sep = "")) 
 
 
 curve(l_a0_p, 0, maxA, lwd = 2, lty = 2, col = 2,  ylab = "", xlab = expression(a[0]), ylim = c(-200, 200))
@@ -103,7 +101,7 @@ lapply(gam.preds.list, function(pred) mean( abs(pred[pred$a0 < 1, ]$lca0 - true.
 
 forplot_ca0 <- do.call(rbind, gam.preds.list)
 
-write.csv(forplot_ca0, file = paste("../data/constant_data/fitted_predictions_lca0_Poisson_J=", J, ".csv", sep = ""),
+write.csv(forplot_ca0, file = paste("../../data/constant_data/fitted_predictions_lca0_Poisson_J=", J, ".csv", sep = ""),
           row.names = FALSE)
 
 library(ggplot2)
@@ -122,7 +120,14 @@ p0 <- ggplot(data = forplot_ca0, aes(x = a0, y = lca0, colour = approximating_fu
   stat_function(fun = l_a0, linetype = "dashed", size = 1.2, colour = "black") + 
   scale_x_continuous(expression(a[0])) +
   scale_y_continuous(expression(log(c(a[0])))) +
-  theme_bw(base_size = 16)
+  theme_bw(base_size = 20) + 
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0))
 p0  
 
-ggsave(p0, filename = paste("../figures/estimates_log_ca0_Poisson_J=", J, ".pdf", sep = ""), dpi = 300)
+ggsave(p0, filename = paste("../../figures/estimates_log_ca0_Poisson_J=", J, ".pdf", sep = ""), dpi = 300)
