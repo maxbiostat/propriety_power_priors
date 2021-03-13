@@ -1,8 +1,8 @@
-source("power_priors_aux.r")
+library(npowerPrioR)
 
 scenario <- 4
 
-source(paste("analyses_Bernoulli/data_Bernoulli_scenario_", scenario, ".r", sep = ""))
+source(paste("data_Bernoulli_scenario_", scenario, ".r", sep = ""))
 
 bb.data <- list(
   N0 = N_0,
@@ -36,10 +36,11 @@ l_a0_pp <- Vectorize(l_a0_pp)
 J <- 20
 maxA <- 1
 
-adaptive.ca0.estimates <- read.csv(paste("../data/constant_data/Bernoulli_logCA0_scenario_", scenario,
+adaptive.ca0.estimates <- read.csv(paste("../../data/constant_data/Bernoulli_logCA0_scenario_", scenario,
                                                  "_J=", J, ".csv", sep = ""))
 
-curve(l_a0_p, 0, maxA, lwd = 2, lty = 2, col = 2,  ylab = "", xlab = expression(a[0]), ylim = c(-200, 200))
+curve(l_a0_p, 0, maxA, lwd = 2, lty = 2, col = 2,  ylab = "",
+      xlab = expression(a[0]), ylim = c(-200, 200), main = paste("Scenario", scenario))
 abline(h = 0 , lwd = 2 , lty = 3)
 curve(l_a0, 0, maxA, lwd = 2, add = TRUE)
 points(adaptive.ca0.estimates$a0, adaptive.ca0.estimates$lc_a0)
@@ -72,9 +73,9 @@ deriv.preds <- midpoint_integrate_la0(pred_a0s, deriv.gam.fit)
 true.lca0s <- l_a0(pred_a0s)
 
 gam.preds.list <- list(
-  gam =  data.frame (a0 = pred_a0s, lca0 = preds.gam$mean, dev = preds.gam$mean - true.la0, lwr = preds.gam$lwr,
+  gam =  data.frame (a0 = pred_a0s, lca0 = preds.gam$mean, dev = preds.gam$mean - true.lca0s, lwr = preds.gam$lwr,
                           upr = preds.gam$upr, approximating_function = "gam", design = "adaptive"),
-  derivative = data.frame (a0 = pred_a0s, lca0 = deriv.preds, dev = deriv.preds - true.la0, lwr = NA, upr = NA,
+  derivative = data.frame (a0 = pred_a0s, lca0 = deriv.preds, dev = deriv.preds - true.lca0s, lwr = NA, upr = NA,
                            approximating_function = "gam-derivative", design = "adaptive_numerical")
 )
 
@@ -92,7 +93,7 @@ lapply(gam.preds.list, function(pred) mean( abs(pred[pred$a0 < 1, ]$lca0 - true.
 
 forplot_ca0 <- do.call(rbind, gam.preds.list)
 
-write.csv(forplot_ca0, file = paste("../data/constant_data/fitted_predictions_lca0_Bernoulli_scenario_", scenario,
+write.csv(forplot_ca0, file = paste("../../data/constant_data/fitted_predictions_lca0_Bernoulli_scenario_", scenario,
                                     "_J=", J, ".csv", sep = ""),
           row.names = FALSE)
 
@@ -115,7 +116,7 @@ p0 <- ggplot(data = forplot_ca0, aes(x = a0, y = lca0, colour = approximating_fu
   theme_bw(base_size = 16)
 p0  
 
-ggsave(p0, filename = paste("../figures/estimates_log_ca0_Bernoulli_scenario_", scenario,
+ggsave(p0, filename = paste("../../figures/estimates_log_ca0_Bernoulli_scenario_", scenario,
                             "_J=", J, ".pdf", sep = ""), dpi = 300)
 
 # p0b <- ggplot(data = subset(forplot_ca0, a0 <= 1), aes(x = a0, y = lca0, colour = approximating_function, fill = approximating_function)) +

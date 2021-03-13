@@ -1,12 +1,12 @@
-source("power_priors_aux.r")
 source("data_cure_rate_real.r")
 
+library(npowerPrioR)
 library(rstan)
 rstan_options(auto_write = TRUE)
 options(mc.cores = 4)
 
 #### Sampling from the "prior"
-compiled.model.prior <- stan_model("stan/cure_rate_prior.stan")
+prior <- stan_model("stan/cure_rate_prior.stan")
 
 cr.data <- list(
   n = N_0,
@@ -19,20 +19,18 @@ cr.data <- list(
   delta_0 = d0,
   tau_0 = tau0,
   sigma_beta = 10,
-  a_0 = NA
+  a_0 = 0.05
 )
 ####################
 J <- 20
 maxA <- 1
 epsilon <- 0.05
-
-source("grid_builder.r")
 #
 adaptive.time <- system.time(
-  adaptive.ca0.estimates <- build_grid(eps = epsilon,
+  adaptive.ca0.estimates <- build_grid(compiled.model.prior = prior, eps = epsilon,
                                        M = maxA, J = J, v1 = 10, v2 = 10, stan.list = cr.data,
-                                       pars = c("alpha", "lambda", "beta"), strict = TRUE)
+                                       pars = c("alpha", "lambda", "beta"), strict = FALSE)
 )
 write.csv(adaptive.ca0.estimates$result, row.names = FALSE,
-          file = "../data/constant_data/CureRateRealData_logCA0_adaptive.csv")
-save(adaptive.ca0.estimates, file = "../data/sensitivity_data/cure_rate_real.RData")
+          file = paste0("../../data/constant_data/CureRateRealData_logCA0_adaptive_J=", J, ".csv"))
+save(adaptive.ca0.estimates, file = "../../data/sensitivity_data/cure_rate_real.RData")

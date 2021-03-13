@@ -5,7 +5,7 @@ summary(glm(y_0 ~  X_0, family = "binomial"))
 ###
 J <- 20
 
-load(paste("../data/sensitivity_data/RegressionLogistic_logCA0_J=", J, "_scenario_", scenario, ".RData", sep = ""))
+load(paste("../../data/sensitivity_data/RegressionLogistic_logCA0_J=", J, "_scenario_", scenario, ".RData", sep = ""))
 
 constant.data <- adaptive.ca0.estimates$result
 maxA <- max(constant.data$a0)
@@ -41,7 +41,7 @@ gam.preds.list <- list(
 forplot_ca0 <- do.call(rbind, gam.preds.list)
 
 write.csv(forplot_ca0,
-          file = paste("../data/constant_data/fitted_predictions_lca0_RegressionLogistic_J=", J, "_scenario_", scenario, ".csv", sep = ""),  row.names = FALSE)
+          file = paste("../../data/constant_data/fitted_predictions_lca0_RegressionLogistic_J=", J, "_scenario_", scenario, ".csv", sep = ""),  row.names = FALSE)
 
 ###
 
@@ -84,4 +84,4 @@ p1 <- ggplot(data = sens.analysis.dt, aes(x = a_0, y = mean, fill = parameter, c
 p1
 
 ggsave(p1,
-       filename = paste("../figures/sensitivity_a0_RegressionLogistic_J=", J, "_scenario_", scenario, ".pdf", sep = ""), dpi = 300)
+       filename = paste("../../figures/sensitivity_a0_RegressionLogistic_J=", J, "_scenario_", scenario, ".pdf", sep = ""), dpi = 300)

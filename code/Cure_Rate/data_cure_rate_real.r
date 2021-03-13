@@ -1,5 +1,5 @@
 ## Historical data, E1673 trial
-historical.data <- read.csv("../data/e1673.jasa.dat", sep = " ")
+historical.data <- read.csv("../../data/e1673.jasa.dat", sep = " ")
 stand_age_0 <- (historical.data$age -mean(historical.data$age))/sd(historical.data$age)
 N_0 <- length(stand_age_0)
 X_0 <- cbind(rep(1, N_0), # x0 - dummy for intercept
@@ -12,7 +12,7 @@ Delta_0 <- historical.data$censor
 
 
 ## New data, E1684 trial
-full.data <- read.csv("../data/e1684_and_e1690_data.csv", sep = "\t")
+full.data <- read.csv("../../data/e1684_and_e1690_data.csv", sep = "\t")
 new.data <- subset(full.data,
                           study  == "1684" & survtime > 0)
 

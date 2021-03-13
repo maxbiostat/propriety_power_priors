@@ -4,7 +4,7 @@ library(rstan)
 rstan_options(auto_write = TRUE)
 options(mc.cores = 4)
 
-constant_data <- read.csv("../data/constant_data/Poisson_logCA0_adaptive_J=20.csv")
+constant_data <- read.csv("../../data/constant_data/Poisson_logCA0_adaptive_J=20.csv")
 maxA <- max(constant_data$a0)
 
 #####################
@@ -90,16 +90,21 @@ a0_dist <- ggplot(a0.dt, aes(x = a0, fill = normalisation, colour = normalisatio
   geom_density() +
   stat_function(fun = function(x) dbeta(x, eta, nu),
                 geom = "line", colour = "black", linetype = "longdash") + 
-  # ggtitle("Gaussian") +
   facet_grid(normalisation~., scales = "free") +
   scale_y_continuous("Density", expand = c(0, 0)) +
   scale_x_continuous(expression(a[0]), expand = c(0, 0)) +
-  theme_bw(base_size = 20)
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0))
 
 a0_dist
 
-
-ggsave("../figures/a0_posterior_Poisson.pdf", a0_dist)
+ggsave("../../figures/a0_posterior_Poisson.pdf", a0_dist)
 ###
 
 unnorm.lambda.dt <- data.frame(lambda = extract(unnorm.posterior.poisson, 'lambda')$lambda)
@@ -129,8 +134,15 @@ lambda_posterior <- ggplot(data = posterior.dt, aes(x = lambda, colour = normali
   scale_x_continuous(expression(lambda), expand = c(0, 0)) +
   scale_y_continuous("Density", expand = c(0, 0)) +
   geom_vline(xintercept = true.lambda, linetype = "dashed") +
-  theme_bw(base_size = 20)
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0))
 
 lambda_posterior
 
-ggsave("../figures/parameter_posterior_Poisson.pdf", lambda_posterior)
+ggsave("../../figures/parameter_posterior_Poisson.pdf", lambda_posterior, dpi = 400)

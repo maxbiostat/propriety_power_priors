@@ -54,7 +54,7 @@ pairs(unnorm.posterior.gaussian, pars = c("a_0", "mu", "tau"))
 
 J <- 20
 
-constant_data <- read.csv(paste("../data/constant_data/Gaussian_logCA0_adaptive_J=", J, ".csv", sep = ""))
+constant_data <- read.csv(paste("../../data/constant_data/Gaussian_logCA0_adaptive_J=", J, ".csv", sep = ""))
 library(mgcv)
 fit.gam <- mgcv::gam(lc_a0 ~ s(a0, k = J + 1), data = constant_data)
 
@@ -156,14 +156,21 @@ a0_dist <- ggplot(a0.dt, aes(x = a0, fill = normalisation, colour = normalisatio
   scale_y_continuous("Density", expand = c(0, 0)) +
   scale_x_continuous(expression(a[0]), expand = c(0, 0)) +
   theme_bw(base_size = 20) +
-  theme(strip.text.y = element_blank())
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0))
+
 
 if(copy) a0_dist <- a0_dist +   stat_function(fun = special_marginal_a0_norm,
                                               geom = "line", colour = "black", linetype = "solid") 
 
 a0_dist
 
-ggsave(paste("../figures/a0_posterior_Gaussian_J=", J, ".pdf", sep = ""), a0_dist, dpi = 300)
+ggsave(paste("../../figures/a0_posterior_Gaussian_J=", J, ".pdf", sep = ""), a0_dist, dpi = 300)
 
 a0_dist_norm <- ggplot(subset(a0.dt, normalisation != "none"),
                        aes(x = normalisation, y = a0,
@@ -172,11 +179,18 @@ a0_dist_norm <- ggplot(subset(a0.dt, normalisation != "none"),
   ggtitle("Gaussian") +
   scale_y_continuous("Density", expand = c(0, 0)) +
   theme_bw(base_size = 20) +
-  theme(strip.text.y = element_blank())
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0))
+
 
 a0_dist_norm
 
-ggsave(paste("../figures/a0_posterior_Gaussian_normalisation_comparison_J=", J, ".pdf", sep = ""),
+ggsave(paste("../../figures/a0_posterior_Gaussian_normalisation_comparison_J=", J, ".pdf", sep = ""),
        a0_dist_norm, dpi = 300)
 
 ###
@@ -234,9 +248,17 @@ parameter_posteriors <- ggplot(data = posterior.dt,
   scale_y_continuous("Density", expand = c(0, 0)) +
   facet_wrap(.~parameter,  scales = "free", labeller = label_parsed) +
   # geom_vline(data = post.means, aes(xintercept = value), linetype = "dashed") +
-  theme_bw(base_size = 20)
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0))
+
 
 parameter_posteriors
 
-ggsave(filename = paste("../figures/parameter_posterior_Gaussian_J=", J, ".pdf", sep = ""),
+ggsave(filename = paste("../../figures/parameter_posterior_Gaussian_J=", J, ".pdf", sep = ""),
        plot = parameter_posteriors, dpi = 300)

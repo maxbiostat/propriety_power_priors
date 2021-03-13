@@ -1,29 +1,12 @@
-source("power_priors_aux.r")
+library(npowerPrioR)
 source("data_cure_rate_real.r")
 
-#### Sampling from the "prior"
-
-cr.data <- list(
-  n = N_0,
-  p = ncol(X_0),
-  y = Y_0_cens,
-  X = X_0,
-  delta = Delta_0,
-  mu_0 = mu0,
-  sigma_0 = s0,
-  delta_0 = d0,
-  tau_0 = tau0,
-  sigma_beta = 10,
-  a_0 = NA
-)
 ####################
 J <- 20
 
-load("../data/sensitivity_data/cure_rate_real.RData")
+adaptive.ca0.estimates <- read.csv(paste0("../../data/constant_data/CureRateRealData_logCA0_adaptive_J=", J, ".csv")) 
 
-constant.data <- adaptive.ca0.estimates$result
-
-maxA <- max(constant.data$a0)
+maxA <- max(adaptive.ca0.estimates$a0)
 
 #######
 
@@ -38,8 +21,8 @@ midpoint_integrate_la0 <- function(x_preds, fit){
   return(ans)
 }
 
-fit.gam <- mgcv::gam(lc_a0 ~ s(a0, k = J + 1), data = constant.data)
-deriv.gam.fit <- mgcv::gam(deriv_lc ~ s(a0, k = J), data = constant.data[-1, ])
+fit.gam <- mgcv::gam(lc_a0 ~ s(a0, k = J + 1), data = adaptive.ca0.estimates)
+deriv.gam.fit <- mgcv::gam(deriv_lc ~ s(a0, k = J), data = adaptive.ca0.estimates[-1, ])
 
 K <- 20000
 pred_a0s <- seq(0, maxA, length.out = K)
@@ -58,7 +41,7 @@ gam.preds.list <- list(
 
 forplot_ca0 <- do.call(rbind, gam.preds.list)
 
-write.csv(forplot_ca0, file = "../data/constant_data/fitted_predictions_lca0_CureRateSimuData.csv",  row.names = FALSE)
+write.csv(forplot_ca0, file = "../../data/constant_data/fitted_predictions_lca0_CureRateSimuData.csv",  row.names = FALSE)
 
 ### Plotting 
 
@@ -67,7 +50,7 @@ library(ggplot2)
 p0 <- ggplot(data = forplot_ca0, aes(x = a0, y = lca0, colour = approximating_function, fill = approximating_function)) +
   geom_line() +
   geom_ribbon(aes(min = lwr, max = upr), alpha = .4) +
-  geom_point(data = constant.data, mapping = aes(x = a0, y = lc_a0), colour = "black", alpha = .4, size = 5, inherit.aes = FALSE) + 
+  geom_point(data = adaptive.ca0.estimates, mapping = aes(x = a0, y = lc_a0), colour = "black", alpha = .4, size = 5, inherit.aes = FALSE) + 
   scale_x_continuous(expression(a[0])) +
   scale_y_continuous(expression(log(c(a[0])))) +
   theme_bw(base_size = 16)

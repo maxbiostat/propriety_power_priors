@@ -1,9 +1,7 @@
-source("power_priors_aux.r")
-
-scenario <- 4
+scenario <- 3
 J <- 20
 
-source(paste("analyses_Bernoulli/data_Bernoulli_scenario_", scenario, ".r", sep = ""))
+source(paste("data_Bernoulli_scenario_", scenario, ".r", sep = ""))
 
 library(rstan)
 rstan_options(auto_write = TRUE)
@@ -34,7 +32,7 @@ pairs(unnorm.posterior.bern, pars = c("a_0", "theta"))
 
 ### The approximately normalised prior
 
-constant_data <- read.csv(paste("../data/constant_data/Bernoulli_logCA0_scenario_", scenario, "_J=", J, ".csv", sep = ""))
+constant_data <- read.csv(paste("../../data/constant_data/Bernoulli_logCA0_scenario_", scenario, "_J=", J, ".csv", sep = ""))
 library(mgcv)
 fit.gam <- gam(lc_a0 ~ s(a0, k = J + 1), data = constant_data)
 
@@ -106,12 +104,24 @@ a0_dist <- ggplot(a0.dt, aes(x = a0, fill = normalisation, colour = normalisatio
   # ggtitle("Bernoulli") +
   facet_grid(normalisation~., scales = "free") +
   scale_y_continuous("Density", expand = c(0, 0)) +
-  scale_x_continuous(expression(a[0]), expand = c(0, 0)) +
-  theme_bw(base_size = 20)
+  scale_x_continuous(expression(a[0]), expand = c(0, 0)) + 
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0)) + 
+
+  {
+    if(scenario != 4) theme(legend.position = "none") else theme_bw(base_size = 20)
+  } 
 
 a0_dist
 
-ggsave(paste("../figures/a0_posterior_Bernoulli_scenario_", scenario, "_J=", J, ".pdf", sep = ""), a0_dist)
+ggsave(paste("../../figures/a0_posterior_Bernoulli_scenario_", scenario,
+             "_J=", J, ".pdf", sep = ""), a0_dist, dpi = 400)
 
 a0_dist_norm <- ggplot(subset(a0.dt,
                               normalisation != "none"),
@@ -119,11 +129,18 @@ a0_dist_norm <- ggplot(subset(a0.dt,
   geom_boxplot(alpha = .4) +
   ggtitle("Bernoulli") +
   scale_y_continuous("Density", expand = c(0, 0)) +
-  theme_bw(base_size = 20)
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0))
 
 a0_dist_norm
 
-ggsave("../figures/a0_posterior_Bernoulli_normalisation_comparison.pdf", a0_dist_norm)
+ggsave("../../figures/a0_posterior_Bernoulli_normalisation_comparison.pdf", a0_dist_norm)
 
 ###
 
@@ -149,7 +166,14 @@ theta_posterior <- ggplot(data = par.posteriors, aes(x = theta, colour = normali
   # geom_vline(xintercept = y/N, linetype = "dashed") +
   scale_x_continuous(expression(theta), expand = c(0, 0)) +
   scale_y_continuous("Density", expand = c(0, 0)) +
-  theme_bw(base_size = 20)
+  theme_bw(base_size = 20) + 
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y = element_blank(),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0))
 
 theta_posterior
 
@@ -159,7 +183,8 @@ theta_posterior.b <- ggplot(data = par.posteriors, aes(x = normalisation,
                                                        y = theta, colour = normalisation, fill = normalisation)) +
   geom_boxplot(alpha = .4) +
   scale_y_continuous(expression(theta), expand = c(0, 0)) +
-  theme_bw(base_size = 20)
+  theme_bw(base_size = 20) +
+  theme(legend.position = "none")
 
 theta_posterior.b
 

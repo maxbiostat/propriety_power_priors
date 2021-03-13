@@ -3,7 +3,7 @@ rstan_options(auto_write = TRUE)
 options(mc.cores = 4)
 
 #####
-scenario <- "A"
+scenario <- "B"
 source(paste("data_logistic_regression_scenario_", scenario, ".r", sep = ""))
 
 summary(glm(y_0 ~ X_0, family = "binomial"))
@@ -34,7 +34,7 @@ pairs(unnorm.posterior.lgr, pars = c("a_0", "beta"))
 ### The approximately normalised prior
 
 J <- 20
-constant_data <- read.csv(paste("../data/constant_data/RegressionLogistic_logCA0_J=", J, "_scenario_", scenario, ".csv", sep = ""))
+constant_data <- read.csv(paste("../../data/constant_data/RegressionLogistic_logCA0_J=", J, "_scenario_", scenario, ".csv", sep = ""))
 
 library(mgcv)
 fit.gam <- mgcv::gam(lc_a0 ~ s(a0, k = J + 1), data = constant_data)
@@ -78,6 +78,10 @@ a0.dt <-
 
 library(ggplot2)
 
+a0.dt$normalisation <- factor(a0.dt$normalisation,
+                                     levels = c("none", paste("K=", Ks, sep = "")) )
+
+
 a0_dist <- ggplot(a0.dt, aes(x = a0, fill = normalisation, colour = normalisation)) +
   geom_density() +
   stat_function(fun = function(x) dbeta(x, eta, nu),
@@ -97,7 +101,7 @@ a0_dist <- ggplot(a0.dt, aes(x = a0, fill = normalisation, colour = normalisatio
 
 a0_dist
 
-ggsave(paste("../figures/a0_posterior_RegressionLogistic_J=", J, "_scenario_", scenario, ".pdf", sep = ""), a0_dist)
+ggsave(paste("../../figures/a0_posterior_RegressionLogistic_J=", J, "_scenario_", scenario, ".pdf", sep = ""), a0_dist)
 
 a0_dist_norm <- ggplot(subset(a0.dt, normalisation != "none"),
                        aes(x = normalisation, y = a0,
@@ -109,7 +113,7 @@ a0_dist_norm <- ggplot(subset(a0.dt, normalisation != "none"),
 
 a0_dist_norm
 
-ggsave(paste("../figures/a0_posterior_RegressionLogistic_normalisation_comparison_J=", J, "_scenario_", scenario, ".pdf", sep = ""), a0_dist_norm)
+ggsave(paste("../../figures/a0_posterior_RegressionLogistic_normalisation_comparison_J=", J, "_scenario_", scenario, ".pdf", sep = ""), a0_dist_norm)
 
 ###
 unnorm.pars <- as.data.frame(
@@ -168,5 +172,5 @@ parameter_posteriors <- ggplot(data = posterior.dt, aes(x = sample, colour = nor
 
 parameter_posteriors
 
-ggsave(paste("../figures/parameter_posterior_LogisticRegression_J=", J,
+ggsave(paste("../../figures/parameter_posterior_LogisticRegression_J=", J,
              "_scenario_", scenario, ".pdf", sep = ""), plot = parameter_posteriors, dpi = 400)

@@ -48,9 +48,9 @@ J <- 20
 maxA <- 10
 
 ## Importing 
-uniform.ca0.estimates <- read.csv(paste("../data/constant_data/Gaussian_logCA0_uniform", "_J=", J, ".csv", sep = ""))
-adaptive.ca0.estimates <- read.csv(paste("../data/constant_data/Gaussian_logCA0_adaptive", "_J=", J, ".csv", sep = ""))
-adaptive.ca0.estimates.derivOnly <- read.csv(paste("../data/constant_data/Gaussian_logCA0_adaptive_derivOnly", "_J=", J, ".csv", sep = ""))
+uniform.ca0.estimates <- read.csv(paste("../../data/constant_data/Gaussian_logCA0_uniform", "_J=", J, ".csv", sep = ""))
+adaptive.ca0.estimates <- read.csv(paste("../../data/constant_data/Gaussian_logCA0_adaptive", "_J=", J, ".csv", sep = ""))
+adaptive.ca0.estimates.derivOnly <- read.csv(paste("../../data/constant_data/Gaussian_logCA0_adaptive_derivOnly", "_J=", J, ".csv", sep = ""))
 
 ####
 ## Plotting the curves l(a_0) and derivatives
@@ -149,6 +149,6 @@ p0b
 plot(pred_a0s, (true.lca0s-preds.gam.adaptive$mean))
 plot(pred_a0s, (true.lca0s-deriv.preds))
 
-ggsave(p0, filename = paste("../figures/estimates_log_ca0_Gaussian_J=", J, ".pdf", sep = ""), dpi = 300)
+ggsave(p0, filename = paste("../../figures/estimates_log_ca0_Gaussian_J=", J, ".pdf", sep = ""), dpi = 300)
 
-ggsave(p0b, filename = paste("../figures/estimates_log_ca0_Gaussian_restricted_J=", J, ".pdf", sep = ""), dpi = 300)
+ggsave(p0b, filename = paste("../../figures/estimates_log_ca0_Gaussian_restricted_J=", J, ".pdf", sep = ""), dpi = 300)

@@ -32,8 +32,8 @@ adaptive.time <- system.time(
 )
 
 write.csv(adaptive.ca0.estimates$result,
-          file = paste("../data/constant_data/RegressionLogistic_logCA0_J=", J,
+          file = paste("../../data/constant_data/RegressionLogistic_logCA0_J=", J,
                        "_scenario_", scenario, ".csv", sep = ""), row.names = FALSE)
 
-save(adaptive.ca0.estimates, file = paste("../data/sensitivity_data/RegressionLogistic_logCA0_J=", J,
+save(adaptive.ca0.estimates, file = paste("../../data/sensitivity_data/RegressionLogistic_logCA0_J=", J,
                                           "_scenario_", scenario, ".RData", sep = ""))
