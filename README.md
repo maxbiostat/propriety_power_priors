@@ -7,3 +7,5 @@ The main idea is to raise the likelihood to a certain scalar, `a0`, usually betw
 
 In this paper, [Joseph Ibrahim](https://sph.unc.edu/adv_profile/joseph-g-ibrahim-phd/) and [I](https://lmfcarvalho.org/about/) explore the so-called normalised power prior, where `a0` is allowed to vary according a prior distribution.
 We prove a few interesting things about the normalising constant `c(a0)` and devise an approximate method to sample from the joint posterior of the tempering scalar `a0`and the parameters of interest (`theta`).
+
+The package with the routines to run the examples in this repository is [npowerPrioR](https://github.com/maxbiostat/npowerPrioR). 
