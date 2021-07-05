@@ -1,6 +1,7 @@
 # On the normalised power prior 
 
 [Arxiv](https://arxiv.org/abs/2004.14912)
+
 [Statistics in Medicine](https://onlinelibrary.wiley.com/doi/10.1002/sim.9124)
 
 A [power prior](https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.6728) is a way of constructing an informative prior distribution based on historical data.
